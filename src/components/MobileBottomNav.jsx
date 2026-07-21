@@ -1,4 +1,4 @@
-// src/components/MobileBottomNav.jsx — compact bottom nav; hides on scroll down, shows on scroll up
+// src/components/MobileBottomNav.jsx — compact bottom nav (Ahnaf Fashion, gold on black); hides on scroll down
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
@@ -29,7 +29,6 @@ export default function MobileBottomNav() {
       requestAnimationFrame(() => {
         const y = window.scrollY;
         const diff = y - lastY.current;
-        // ignore tiny moves; near the very top always show
         if (y < 40) {
           setHidden(false);
         } else if (Math.abs(diff) > 6) {
@@ -44,7 +43,6 @@ export default function MobileBottomNav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Hide on checkout (and anywhere else you don't want it)
   const HIDE_ON = ["/checkout"];
   if (HIDE_ON.some((p) => location.pathname.startsWith(p))) return null;
 
@@ -59,8 +57,12 @@ export default function MobileBottomNav() {
 
   return (
     <nav
-      className={`md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-gray-200 bg-white transition-transform duration-300 ${hidden ? "translate-y-full" : "translate-y-0"}`}
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      className={`md:hidden fixed bottom-0 inset-x-0 z-40 border-t transition-transform duration-300 ${hidden ? "translate-y-full" : "translate-y-0"}`}
+      style={{
+        paddingBottom: "env(safe-area-inset-bottom)",
+        backgroundColor: "var(--secondary)",
+        borderColor: "var(--border)",
+      }}
       aria-label="Bottom navigation"
     >
       <ul className="flex items-stretch justify-around">
@@ -71,15 +73,15 @@ export default function MobileBottomNav() {
               <button
                 onClick={() => navigate(to)}
                 className="w-full flex flex-col items-center gap-0.5 py-1 transition-colors"
-                style={{ color: active ? BRAND : "#374151" }}
+                style={{ color: active ? BRAND : "var(--subtitle)" }}
                 aria-label={label}
               >
                 <span className="relative">
                   <Icon style={{ fontSize: 19 }} />
                   {badge > 0 && (
                     <span
-                      className="absolute -top-1 -right-2 min-w-[15px] h-[15px] px-1 rounded-full text-[9px] font-bold text-white flex items-center justify-center"
-                      style={{ backgroundColor: BRAND }}
+                      className="absolute -top-1 -right-2 min-w-[15px] h-[15px] px-1 rounded-full text-[9px] font-bold flex items-center justify-center"
+                      style={{ backgroundColor: BRAND, color: "var(--button-text)" }}
                     >
                       {badge > 99 ? "99+" : badge}
                     </span>
