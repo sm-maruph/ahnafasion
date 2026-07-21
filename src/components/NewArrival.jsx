@@ -117,12 +117,12 @@ function ProductTile({ product, onOpen, onAddToCart, onBuyNow, onToggleWishlist,
 
 function SkeletonTile() {
   return (
-    <div className="rounded-xl bg-white shadow-sm overflow-hidden">
-      <div className="h-56 sm:h-60 bg-gray-100 animate-pulse" />
+    <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: "var(--foreground)", borderColor: "var(--border)" }}>
+      <div className="h-56 sm:h-60 animate-pulse" style={{ backgroundColor: "rgba(212,175,55,.06)" }} />
       <div className="p-3 space-y-2">
-        <div className="h-3 bg-gray-100 rounded w-3/4 animate-pulse" />
-        <div className="h-7 bg-gray-100 rounded animate-pulse" />
-        <div className="h-7 bg-gray-100 rounded animate-pulse" />
+        <div className="h-3 rounded w-3/4 animate-pulse" style={{ backgroundColor: "rgba(212,175,55,.06)" }} />
+        <div className="h-7 rounded animate-pulse" style={{ backgroundColor: "rgba(212,175,55,.06)" }} />
+        <div className="h-7 rounded animate-pulse" style={{ backgroundColor: "rgba(212,175,55,.06)" }} />
       </div>
     </div>
   );
