@@ -10,6 +10,7 @@ const BRAND = "var(--brand)";
 const settings = useSettings();
 
 export default function Register() {
+  const settings = useSettings();
   const navigate = useNavigate();
   const { register } = useAuth();
 
