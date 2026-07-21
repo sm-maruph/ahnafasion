@@ -7,7 +7,6 @@ import { useAuth } from "../context/AuthContext";
 import { useSettings } from "../context/SettingsContext";
 
 const BRAND = "var(--brand)";
-const settings = useSettings();
 
 export default function Register() {
   
