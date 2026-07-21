@@ -72,40 +72,38 @@ export default function SearchBar({ className = "", placeholder = "Search for pr
   const clear = () => { setTerm(""); setSuggestions([]); setActive(-1); };
 
   return (
+    <>
+    <style>{`.afl-search-input{color:var(--details)}.afl-search-input::placeholder{color:var(--subtitle);opacity:.7}`}</style>
     <div ref={boxRef} className={`relative ${className}`}>
-      <form onSubmit={onSubmit} className="flex items-center rounded-md px-4 py-2.5" style={{ backgroundColor: "var(--background)", border: "1px solid var(--border)" }}>
+      <form onSubmit={onSubmit} className="flex items-center rounded-md px-4 py-2.5 border" style={{ backgroundColor: "var(--foreground)", borderColor: "var(--border)" }}>
         <input
           value={term}
           onChange={(e) => { setTerm(e.target.value); setOpen(true); setActive(-1); }}
           onFocus={() => term.trim() && setOpen(true)}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className="flex-1 min-w-0 bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
+          className="flex-1 min-w-0 bg-transparent text-sm outline-none afl-search-input"
         />
         {term && (
-          <button type="button" onClick={clear} aria-label="Clear" className="mr-1" style={{ color: "var(--title)" }}>
-            <CloseIcon style={{ fontSize: 16 }} />
-          </button>
+          <button type="button" onClick={clear} aria-label="Clear" className="mr-1" style={{ color: "var(--subtitle)" }}><CloseIcon style={{ fontSize: 16 }} /></button>
         )}
-        <button type="submit" aria-label="Search" style={{ color: "var(--title)" }}>
-          <SearchIcon fontSize="small" />
-        </button>
+        <button type="submit" aria-label="Search" style={{ color: "var(--subtitle)" }}><SearchIcon fontSize="small" /></button>
       </form>
 
       {/* Suggestions dropdown */}
       {open && term.trim().length >= 2 && (
-        <div className="absolute left-0 right-0 top-full mt-2 z-[60] bg-white rounded-lg shadow-2xl border border-gray-100 overflow-hidden">
+        <div className="absolute left-0 right-0 top-full mt-2 z-[60] rounded-lg shadow-2xl border overflow-hidden" style={{ backgroundColor: "var(--secondary)", borderColor: "var(--border)" }}>
           {loading ? (
             <div className="p-3 space-y-2">
               {Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="flex items-center gap-3 animate-pulse">
-                  <div className="h-12 w-10 rounded bg-gray-100" />
-                  <div className="flex-1"><div className="h-3 bg-gray-100 rounded w-2/3" /><div className="mt-1 h-3 bg-gray-100 rounded w-1/4" /></div>
+                  <div className="h-12 w-10 rounded" style={{ backgroundColor: "rgba(212,175,55,.06)" }} />
+                  <div className="flex-1"><div className="h-3 rounded w-2/3" style={{ backgroundColor: "rgba(212,175,55,.06)" }} /><div className="mt-1 h-3 rounded w-1/4" style={{ backgroundColor: "rgba(212,175,55,.06)" }} /></div>
                 </div>
               ))}
             </div>
           ) : suggestions.length === 0 ? (
-            <div className="p-4 text-sm text-gray-500">No matches. Press Enter to search all products.</div>
+            <div className="p-4 text-sm" style={{ color: "var(--subtitle)" }}>No matches. Press Enter to search all products.</div>
           ) : (
             <>
               <ul className="max-h-[360px] overflow-y-auto">
@@ -115,22 +113,22 @@ export default function SearchBar({ className = "", placeholder = "Search for pr
                       onMouseEnter={() => setActive(i)}
                       onClick={() => goToProduct(p)}
                       className="w-full flex items-center gap-3 px-3 py-2 text-left transition-colors"
-                      style={{ backgroundColor: active === i ? "#f9fafb" : "transparent" }}
+                      style={{ backgroundColor: active === i ? "rgba(212,175,55,.10)" : "transparent" }}
                     >
-                      <img src={p.image} alt={p.name} className="h-12 w-10 rounded object-cover bg-gray-100 shrink-0" onError={imgFallback} />
+                      <img src={p.image} alt={p.name} className="h-12 w-10 rounded object-cover shrink-0" style={{ backgroundColor: "#0F0F0F" }} onError={imgFallback} />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm text-gray-800 truncate">{p.name}</p>
-                        {p.brand && <p className="text-[11px] text-gray-400 truncate">{p.brand}</p>}
+                        <p className="text-sm truncate" style={{ color: "var(--details)" }}>{p.name}</p>
+                        {p.brand && <p className="text-[11px] truncate" style={{ color: "var(--subtitle)", opacity: 0.7 }}>{p.brand}</p>}
                       </div>
                       <div className="text-right shrink-0">
                         <p className="text-sm font-bold" style={{ color: "var(--title)" }}>{taka(p.price)}</p>
-                        {p.oldPrice && <p className="text-[11px] text-gray-400 line-through">{taka(p.oldPrice)}</p>}
+                        {p.oldPrice && <p className="text-[11px] line-through" style={{ color: "var(--subtitle)", opacity: 0.7 }}>{taka(p.oldPrice)}</p>}
                       </div>
                     </button>
                   </li>
                 ))}
               </ul>
-              <button onClick={() => goToResults()} className="w-full text-center text-sm font-semibold py-2.5 border-t border-gray-100 hover:bg-gray-50" style={{ color: BRAND }}>
+              <button onClick={() => goToResults()} className="w-full text-center text-sm font-semibold py-2.5 border-t" style={{ color: BRAND, borderColor: "var(--border)" }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(212,175,55,.08)"} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}>
                 See all results for "{term.trim()}" &rarr;
               </button>
             </>
@@ -138,5 +136,6 @@ export default function SearchBar({ className = "", placeholder = "Search for pr
         </div>
       )}
     </div>
+    </>
   );
 }

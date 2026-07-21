@@ -264,7 +264,7 @@ export default function FeaturedCategories({
               {brandName}<ChevronRightIcon style={{ color: BRAND }} />
             </button>
             <p className="mt-2 text-lg md:text-xl font-medium" style={{ color: "var(--subtitle)" }}>{tagline}</p>
-            <p className="mt-3 text-sm leading-relaxed text-gray-500 ">{description}</p>
+            <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--subtitle)" }}>{description}</p>
           </div>
           <img src={sideImage} alt="" aria-hidden="true" loading="lazy" className="hidden lg:block absolute top-0 right-0 w-[100%] max-w-[360px] h-[80%] max-h-[260px] object-contain pointer-events-none" onError={(e) => (e.target.style.display = "none")} />
         </div>
