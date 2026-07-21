@@ -1,0 +1,88 @@
+/* ============================================================
+   AHNAF FASHION BD — luxury gold on black
+   Brand guide:
+     Rich Black #0B0B0B · Charcoal #171717 · Luxury Gold #D4AF37
+     Antique Gold #B88A2D · Champagne Gold #E7C46A · Ivory White #F8F6F2
+     Soft Grey #BDBDBD · Bronze #6E5424
+   ============================================================ */
+
+/* Fonts: Cinzel (headings) + Poppins (body) */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* ---- Brand / accents ---- */
+  /* NOTE: --brand is ALSO written at runtime by SettingsContext.applyTheme()
+     from store_settings.theme. This value is only the pre-load fallback —
+     set Theme Colors → Primary/Brand to #D4AF37 in /admin/settings too. */
+  --brand:       #D4AF37;   /* Luxury Gold  — buttons, badges, accents (BRAND in components) */
+  --primary:     #0B0B0B;   /* Rich Black   — page & section BACKGROUND (components use it this way) */
+  --secondary:   #171717;   /* Charcoal     — navbar / raised surfaces */
+  --tertiary:    #0B0B0B;   /* Rich Black   — secondary nav strip */
+
+  /* ---- Text ---- */
+  --title:       #D4AF37;   /* Luxury Gold  — headings */
+  --subtitle:    #BDBDBD;   /* Soft Grey    — subheadings (readable on black) */
+  --details:     #F8F6F2;   /* Ivory White  — body copy */
+
+  /* ---- Surfaces ---- */
+  --background:  #0B0B0B;   /* Rich Black   — page background */
+  --foreground:  #171717;   /* Charcoal     — cards, panels */
+
+  /* ---- Button ---- */
+  --button:      #D4AF37;   /* Luxury Gold */
+  --button-text: #0B0B0B;   /* Rich Black on gold = high contrast */
+  --button-hover:#E7C46A;   /* Champagne Gold */
+
+  /* ---- Extra brand tokens ---- */
+  --gold-light:  #E7C46A;   /* Champagne */
+  --gold-deep:   #B88A2D;   /* Antique */
+  --bronze:      #6E5424;
+  --border:      rgba(212, 175, 55, 0.22);  /* thin gold hairlines */
+  --gold-gradient: linear-gradient(90deg, #B88A2D 0%, #D4AF37 50%, #E7C46A 100%);
+
+  /* ---- Category accents (all gold per the brand guide) ---- */
+  --accent-men:         #D4AF37;
+  --accent-women:       #D4AF37;
+  --accent-kids:        #D4AF37;
+  --accent-accessories: #D4AF37;
+  --accent-sale:        #D4AF37;
+
+  /* ---- Fonts ---- */
+  --ff-heading: 'Cinzel', serif;
+  --ff-body:    'Poppins', sans-serif;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base — must come AFTER @tailwind so it wins over preflight */
+body {
+  background-color: var(--background);
+  color: var(--details);
+  font-family: var(--ff-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--ff-heading);
+  letter-spacing: 0.02em;
+}
+
+/* Optional utility classes matching the brand guide */
+.gold-gradient-text {
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.gold-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--brand), transparent);
+  border: 0;
+}
+
+/* Thin gold hairline borders — the "luxury detail" look */
+.gold-border { border: 1px solid var(--border); }

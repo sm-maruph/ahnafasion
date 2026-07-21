@@ -1,0 +1,187 @@
+import React, { useLayoutEffect, useRef, useState } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+import { useAuth } from "./context/AuthContext";
+import { useCart } from "./context/CartContext";
+import { useWishlist } from "./context/WishlistContext";
+
+import ScrollToTopOnRefresh from "./components/ScrollToTop";
+import MaintenancePage from "./components/MaintenancePage";
+import { useSettings } from "./context/SettingsContext";
+import Navbar from "./components/Navbar";
+import LandingComponent from "./components/LandingPage";
+import CategoryPage from "./components/CategoryPage";
+import ProductDetail from "./components/ProductDetail";
+import Checkout from "./components/Checkout";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import Wishlist from "./components/Wishlist";
+import MyOrders from "./components/MyOrders";
+import Cart from "./components/Cart";
+import TrackOrder from "./components/TrackOrder";
+import Stores from "./components/Stores";
+import SalePage from "./components/SalePage";
+import MobileBottomNav from "./components/MobileBottomNav";
+import SearchResults from "./components/SearchResults";
+
+import AboutUs from "./components/AboutUs";
+import ContactUs from "./components/ContactUs";
+
+// New admin dashboard (sidebar shell + landing page)
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminDashboard from "./components/admin/AdminDashboard";
+import AdminProducts from "./components/admin/AdminProducts";
+import AdminCategories from "./components/admin/AdminCategories";
+import AdminOrders from "./components/admin/AdminOrders";
+import AdminDiscounts from "./components/admin/AdminDiscounts";
+import AdminSale from "./components/admin/AdminSale";
+import AdminCustomers from "./components/admin/AdminCustomers";
+import AdminSettings from "./components/admin/AdminSettings";
+import RequireAdmin from "./components/admin/RequireAdmin";
+import AdminCollections from "./components/admin/AdminCollections";
+import AdminHero from "./components/admin/AdminHero";
+import AdminInventory from "./components/admin/AdminInventory";
+
+
+import Partners from "./components/Partner";
+import BottomHeader from "./components/BottomHeader";
+import Footer from "./components/Footer";
+import "./index.css";
+import AutoScrollUp from "./components/subcomponent/AutoScrollUp";
+import ScrollToTop from "./components/subcomponent/ScrollToTop";
+
+function App() {
+  const location = useLocation();
+  const { user, logout, isAdmin, loading: authLoading } = useAuth();
+  const { settings, loading: settingsLoading } = useSettings();
+  const { count: cartCount } = useCart();
+  const { count: wishlistCount } = useWishlist();
+
+  // Both /howdy (old admin) and /admin (new dashboard) hide the storefront chrome
+  const isAdminPage =
+    location.pathname.startsWith("/howdy") || location.pathname.startsWith("/admin");
+
+  // Measure the fixed navbar so <main> always starts right below it (any screen size)
+  const navRef = useRef(null);
+  const [navHeight, setNavHeight] = useState(64);
+
+  useLayoutEffect(() => {
+    if (isAdminPage) {
+      setNavHeight(0);
+      return;
+    }
+    const el = navRef.current;
+    if (!el) return;
+    const measure = () => setNavHeight(el.offsetHeight || 0);
+    measure();
+
+    let ro;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(measure);
+      ro.observe(el);
+    }
+    window.addEventListener("resize", measure);
+    return () => {
+      window.removeEventListener("resize", measure);
+      ro && ro.disconnect();
+    };
+  }, [isAdminPage]);
+
+
+  // ---- Maintenance mode ----------------------------------------------
+  // Admins and the login page must stay reachable, otherwise turning
+  // maintenance OFF again would require a database edit.
+  const isLoginPage = ["/login", "/register"].includes(location.pathname);
+  const stillLoading = authLoading || settingsLoading;
+
+  if (settings.maintenance && !stillLoading && !isAdmin && !isAdminPage && !isLoginPage) {
+    return <MaintenancePage />;
+  }
+
+  return (
+    <>
+      {!isAdminPage && (
+        <Navbar
+          ref={navRef}
+          user={user}
+          cartCount={cartCount}
+          wishlistCount={wishlistCount}
+          onLogout={logout}
+        />
+      )}
+      <ScrollToTopOnRefresh />
+      <AutoScrollUp />
+
+      <main
+        className="w-full mx-auto min-h-screen overflow-x-hidden pb-16 md:pb-0"
+        style={{ paddingTop: isAdminPage ? 0 : navHeight, backgroundColor: "var(--primary)" }}
+      >
+        <Routes>
+          {/* ===== Admin dashboard — guarded: only logged-in admins ===== */}
+          <Route
+            path="/admin"
+            element={
+              <RequireAdmin>
+                <AdminLayout />
+              </RequireAdmin>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="inventory" element={<AdminInventory />} />   {/* <-- ADD THIS */}
+
+            <Route path="categories" element={<AdminCategories />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="discounts" element={<AdminDiscounts />} />
+            <Route path="collections" element={<AdminCollections />} />
+            <Route path="sale" element={<AdminSale />} />
+            <Route path="customers" element={<AdminCustomers />} />
+            <Route path="hero" element={<AdminHero />} />
+            <Route path="settings" element={<AdminSettings />} />
+          </Route>
+
+          {/* Static routes (rank above the dynamic /:category in React Router v6) */}
+          <Route path="/" element={<LandingComponent />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/new-arrivals" element={<CategoryPage />} />
+          <Route path="/product/:slug" element={<ProductDetail />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/track-order" element={<TrackOrder />} />
+          <Route path="/account/orders" element={<MyOrders />} />
+          <Route path="/my-orders" element={<MyOrders />} />
+          <Route path="/stores" element={<Stores />} />
+          <Route path="/sale" element={<SalePage />} />
+          <Route path="/search" element={<SearchResults />} />
+          {/* Dynamic category / subcategory listing */}
+          <Route path="/:category" element={<CategoryPage />} />
+          <Route path="/:category/:subcategory" element={<CategoryPage />} />
+
+          <Route
+            path="*"
+            element={
+              <div className="p-10 text-center text-red-500 text-xl">
+                404 - Page Not Found
+              </div>
+            }
+          />
+        </Routes>
+        <ScrollToTop />
+      </main>
+
+      {!isAdminPage && !isLoginPage && (
+        <>
+          <Footer />
+          <MobileBottomNav />
+        </>
+      )}
+    </>
+  );
+}
+
+export default App;

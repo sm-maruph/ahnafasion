@@ -1,0 +1,367 @@
+// src/components/ProductDetail.jsx — wired to CartContext + WishlistContext
+import { useEffect, useState } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
+import StarRoundedIcon from "@mui/icons-material/StarRounded";
+import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
+import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import { getProductBySlug, getProducts } from "../api";
+import { useCart } from "../context/CartContext";
+import ProductReviews from "./ProductReviews";
+import { useWishlist } from "../context/WishlistContext";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+
+
+const BRAND = "var(--brand)";
+const taka = (n) => `\u09F3${Number(n || 0).toLocaleString("en-BD")}`;
+const imgFallback = (e, label = "RAINZ") => {
+  e.target.onerror = null;
+  e.target.src = `https://placehold.co/600x800/f3f4f6/9ca3af?text=${encodeURIComponent(label)}`;
+};
+
+function Stars({ rating = 0 }) {
+  const full = Math.round(rating);
+  return (
+    <span className="inline-flex text-amber-400 align-middle">
+      {Array.from({ length: 5 }).map((_, i) =>
+        i < full ? <StarRoundedIcon key={i} style={{ fontSize: 18 }} /> : <StarBorderRoundedIcon key={i} style={{ fontSize: 18 }} />
+      )}
+    </span>
+  );
+}
+
+function MiniCard({ product, onOpen }) {
+  const discount = product.oldPrice && product.oldPrice > product.price ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
+  return (
+    <div className="group cursor-pointer" onClick={() => onOpen(product)}>
+      <div className="relative rounded-xl bg-gray-50 overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
+        {discount > 0 && <span className="absolute top-2 left-2 z-10 text-[10px] font-bold text-white px-1.5 py-0.5 rounded" style={{ backgroundColor: BRAND, color: "var(--button-text)" }}>-{discount}%</span>}
+        <div className="aspect-[3/4] flex items-center justify-center p-3 bg-gradient-to-b from-gray-50 to-gray-100">
+          <img src={product.image} alt={product.name} loading="lazy" className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105" onError={(e) => imgFallback(e, product.name)} />
+        </div>
+      </div>
+      <p className="text-sm text-gray-800 truncate mt-2 px-1">{product.name}</p>
+      <div className="flex items-center gap-2 px-1">
+        <span className="text-sm font-bold text-gray-900">{taka(product.price)}</span>
+        {product.oldPrice && <span className="text-xs text-gray-400 line-through">{taka(product.oldPrice)}</span>}
+      </div>
+    </div>
+  );
+}
+
+function RelatedRow({ title, items, onOpen }) {
+  if (!items?.length) return null;
+  return (
+    <section className="mt-12" >
+      <h2 className="text-xl font-bold text-gray-900 mb-4">
+        {title}
+        <span className="ml-2 h-1.5 w-10 inline-block rounded-full align-middle" style={{ backgroundColor: BRAND }} />
+      </h2>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        {items.map((p) => <MiniCard key={p.id} product={p} onOpen={onOpen} />)}
+      </div>
+    </section>
+  );
+}
+
+export default function ProductDetail() {
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const { add } = useCart();
+  const { has, toggle } = useWishlist();
+
+  const [product, setProduct] = useState(null);
+  const [related, setRelated] = useState([]);
+  const [sameCategory, setSameCategory] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [mainImg, setMainImg] = useState(null);
+  const [size, setSize] = useState(null);
+  const [color, setColor] = useState(null);
+  const [qty, setQty] = useState(1);
+  const [error, setError] = useState("");
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    setError("");
+    setRelated([]); setSameCategory([]);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    getProductBySlug(slug)
+      .then((p) => {
+        if (!alive) return;
+        setProduct(p);
+        if (p) {
+          setMainImg(p.images?.[0] || p.image);
+          setColor(null);
+          setSize(null);
+          setQty(1);
+          // Row 1 — same subcategory ("You may also like")
+          const relatedIds = new Set();
+          if (p.subcategory) {
+            getProducts({ subcategory: p.subcategory, pageSize: 12 }).then((res) => {
+              if (!alive) return;
+              const rel = (res.items || []).filter((x) => x.id !== p.id).slice(0, 5);
+              rel.forEach((r) => relatedIds.add(r.id));
+              setRelated(rel);
+              // Row 2 — same category, excluding current + the related ones above
+              getProducts({ category: p.category, pageSize: 16 }).then((res2) => {
+                if (!alive) return;
+                setSameCategory((res2.items || []).filter((x) => x.id !== p.id && !relatedIds.has(x.id)).slice(0, 5));
+              });
+            });
+          } else {
+            setRelated([]);
+            getProducts({ category: p.category, pageSize: 16 }).then((res2) => {
+              if (!alive) return;
+              setSameCategory((res2.items || []).filter((x) => x.id !== p.id).slice(0, 5));
+            });
+          }
+        }
+      })
+      .catch(() => alive && setProduct(null))
+      .finally(() => alive && setLoading(false));
+
+    return () => { alive = false; };
+  }, [slug]);
+
+  const openProduct = (p) => navigate(`/product/${p.slug}`);
+
+  const needsSize = product?.sizes?.length > 0;
+  const needsColor = product?.colors?.length > 0;
+
+  const validate = () => {
+    if (needsColor && !color) { setError("Please select a color first."); return false; }
+    if (needsSize && !size) { setError("Please select a size first."); return false; }
+    if (!qty || qty < 1) { setError("Please select a quantity."); return false; }
+    setError("");
+    return true;
+  };
+
+  const addToCart = () => {
+    if (!validate()) return;
+    add(product, { size, color, qty });
+    setToast(`Added ${qty} × ${product.name}${size ? ` (${size})` : ""} to your bag`);
+    setTimeout(() => setToast(""), 2500);
+  };
+
+  const buyNow = () => {
+    if (!validate()) return;
+    const item = {
+      id: product.id, productId: product.id, slug: product.slug, name: product.name,
+      image: product.image, price: product.price, oldPrice: product.oldPrice, size, color, qty,
+    };
+    navigate("/checkout", { state: { items: [item] } });
+  };
+
+  const wished = product ? has(product.id) : false;
+
+  if (loading) {
+    return (
+      <div className="w-[94%] max-w-[1300px] mx-auto py-10 grid lg:grid-cols-2 gap-10" style={{ backgroundColor: "var(--primary)" }}>
+        <div className="aspect-[3/4] rounded-xl animate-pulse" style={{ backgroundColor: "rgba(255,255,255,.05)" }} />
+        <div className="space-y-4">
+          <div className="h-7 rounded w-2/3 animate-pulse" style={{ backgroundColor: "rgba(255,255,255,.05)" }} />
+          <div className="h-5 rounded w-1/3 animate-pulse" style={{ backgroundColor: "rgba(255,255,255,.05)" }} />
+          <div className="h-24 rounded animate-pulse" style={{ backgroundColor: "rgba(255,255,255,.05)" }} />
+          <div className="h-10 rounded w-1/2 animate-pulse" style={{ backgroundColor: "rgba(255,255,255,.05)" }} />
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="w-[94%] max-w-[1300px] mx-auto py-24 text-center" style={{ backgroundColor: "var(--primary)" }}>
+        <p className="text-gray-500">Sorry, this product could not be found.</p>
+        <button onClick={() => navigate("/")} className="mt-4 rounded-full px-6 py-2 text-sm font-semibold text-white" style={{ backgroundColor: BRAND }}>Back to Home</button>
+      </div>
+    );
+  }
+
+  const discount = product.oldPrice && product.oldPrice > product.price ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
+
+
+  const onZoomMove = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width) * 100;
+    const y = ((e.clientY - r.top) / r.height) * 100;
+    const img = e.currentTarget.querySelector("img");
+    if (img) img.style.transformOrigin = `${x}% ${y}%`;
+  };
+
+  return (
+    <div className="w-[94%] max-w-[1300px] mx-auto py-8" style={{ backgroundColor: "var(--primary)" }}>
+      <nav className="text-xs mb-5 flex items-center flex-wrap gap-y-1" style={{ color: "var(--title)" }}>
+        <Crumb to="/">Home</Crumb>
+        <ChevronRightIcon style={{ fontSize: 14, color: "var(--subtitle)" }} className="mx-0.5" />
+        <Crumb to={`/${product.category}`}>{product.categoryName}</Crumb>
+        {product.subcategory && (
+          <>
+            <ChevronRightIcon style={{ fontSize: 14, color: "var(--subtitle)" }} className="mx-0.5" />
+            <Crumb to={`/${product.category}/${product.subcategory}`}>{product.subcategoryName}</Crumb>
+          </>
+        )}
+      </nav>
+      <div className="grid lg:grid-cols-2 gap-10 items-start">
+        {/* Gallery */}
+        <div className="flex gap-3 items-start">
+          <div className="flex flex-col gap-3 order-1">
+            {(product.images || [product.image]).map((src, i) => (
+              <button
+                key={i}
+                onClick={() => setMainImg(src)}
+                className="h-16 w-16 rounded-lg overflow-hidden border-2 transition-colors shrink-0"
+                style={{ borderColor: mainImg === src ? BRAND : "#e5e7eb" }}
+              >
+                <img src={src} alt="" className="h-full w-full object-cover" onError={(e) => imgFallback(e)} />
+              </button>
+            ))}
+          </div>
+
+          <div
+            className="flex-1 order-2 rounded-xl bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden group cursor-zoom-in"
+            onMouseMove={onZoomMove}
+          >
+            <img
+              src={mainImg}
+              alt={product.name}
+              className="w-full h-auto max-h-[760px] object-cover transition-transform duration-300 ease-out group-hover:scale-[2]"
+              onError={(e) => imgFallback(e, product.name)}
+            />
+          </div>
+        </div>
+
+        {/* Info */}
+        <div>
+          <p className="text-xs uppercase tracking-widest" style={{ color: "var(--button)" }}>{product.brand}</p>
+          <h1 className="mt-1 text-2xl md:text-3xl font-bold" style={{ color: "var(--title)" }}>{product.name}</h1>
+
+          <div className="mt-2 flex items-center gap-2 text-sm" style={{ color: "var(--subtitle)" }}>
+            <Stars rating={product.rating} />
+            <span>{product.rating}</span>
+            <span className="text-gray-300">|</span>
+            <span>{product.reviews} reviews</span>
+          </div>
+
+          <div className="mt-4 flex items-center gap-3">
+            <span className="text-3xl font-extrabold" style={{ color: "var(--button)" }}>{taka(product.price)}</span>
+            {product.oldPrice && <span className="text-lg text-gray-400 line-through">{taka(product.oldPrice)}</span>}
+            {discount > 0 && <span className="text-sm font-bold text-white px-2 py-0.5 rounded" style={{ backgroundColor: BRAND }}>-{discount}%</span>}
+          </div>
+
+          <p className={`mt-2 text-sm font-medium ${product.inStock ? "text-green-600" : "text-red-500"}`}>
+            {product.inStock ? "In stock" : "Out of stock"}
+          </p>
+
+          {product.colors?.length > 0 && (
+            <div className="mt-5">
+              <p className="text-sm font-semibold" style={{ color: "var(--details)" }}>Color: <span className="font-normal" style={{ color: "var(--subtitle)" }}>{color || "Please select"}</span></p>
+              <div className="flex gap-2">
+                {product.colors.map((c) => (
+                  <button key={c.name} onClick={() => { setColor(c.name); setError(""); }} title={c.name} className="h-8 w-8 rounded-full border-2 transition-transform hover:scale-110" style={{ backgroundColor: c.hex, borderColor: color === c.name ? BRAND : "#e5e7eb" }} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {needsSize && (
+            <div className="mt-5">
+              <p className="text-sm font-semibold" style={{ color: "var(--details)" }}>Select Size</p>
+              <div className="flex flex-wrap gap-2">
+                {product.sizes.map((s) => (
+                  <button key={s} onClick={() => { setSize(s); setError(""); }} className="min-w-[44px] rounded-md border px-3 py-2 text-sm font-medium transition-colors"
+                    style={size === s ? { backgroundColor: BRAND, borderColor: BRAND, color: "var(--button-text)" } : { backgroundColor: "var(--foreground)", borderColor: "var(--button)", color: "var(--button)" }}>
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="mt-5">
+            <p className="text-sm font-semibold mb-2" style={{ color: "var(--details)" }}>Quantity</p>
+            <div className="inline-flex items-center rounded-md border" style={{ borderColor: "var(--border)" }}>
+              <button
+                onClick={() => setQty((q) => Math.max(1, q - 1))}
+                className="px-3 py-2 transition-colors"
+                style={{ color: "var(--subtitle)" }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--button)"; e.currentTarget.style.color = "var(--button-text)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--subtitle)"; }}
+              >
+                <RemoveIcon style={{ fontSize: 16 }} />
+              </button>
+              <span className="px-4 text-sm font-semibold" style={{ color: "var(--details)" }}>{qty}</span>
+              <button
+                onClick={() => setQty((q) => q + 1)}
+                className="px-3 py-2 transition-colors"
+                style={{ color: "var(--subtitle)" }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--button)"; e.currentTarget.style.color = "var(--button-text)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--subtitle)"; }}
+              >
+                <AddIcon style={{ fontSize: 16 }} />
+              </button>
+            </div>
+          </div>
+
+          {error && <p className="mt-5 -mb-1 text-sm font-medium text-red-500">{error}</p>}
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            <button onClick={addToCart} disabled={!product.inStock}
+              className="flex-1 min-w-[160px] flex items-center justify-center gap-2 rounded-md border-2 py-3 text-sm font-bold transition-colors disabled:opacity-40"
+              style={{ borderColor: BRAND, color: BRAND }}
+              onMouseEnter={(e) => { if (product.inStock) { e.currentTarget.style.backgroundColor = BRAND; e.currentTarget.style.color = "var(--button-text)"; } }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = BRAND; }}>
+              <ShoppingBagOutlinedIcon style={{ fontSize: 18 }} /> Add to Cart
+            </button>
+            <button onClick={buyNow} disabled={!product.inStock} className="flex-1 min-w-[160px] rounded-md py-3 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-40" style={{ backgroundColor: BRAND }}>
+              Buy Now
+            </button>
+            <button onClick={() => toggle(product)} aria-label="Wishlist" className="rounded-md border border-var(--title) px-3 transition-colors hover:border-gray-300" style={{ color: wished ? BRAND : "var(--title)" }}>
+              {wished ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+            </button>
+          </div>
+
+          <div className="mt-5 flex items-center gap-2 text-sm var(--details)" style={{ color: "var(--details)" }}>
+            <LocalShippingOutlinedIcon style={{ fontSize: 18 }} />
+            Cash on delivery available • Delivery in 2–5 days
+          </div>
+        </div>
+      </div>
+
+      {/* Product Details — full width, below the grid */}
+      <div className="mt-10 border-t border-gray-100 pt-6">
+        <h3 className="text-base font-bold" style={{ color: "var(--title)" }}>Product Details</h3>
+        <p className="text-sm leading-relaxed max-w-4xl" style={{ color: "var(--details)" }}>{product.description}</p>
+      </div>
+      <ProductReviews productId={product.id} />
+      <RelatedRow title="You may also like" items={related} onOpen={openProduct} />
+      <RelatedRow title={`More from ${product.categoryName}`} items={sameCategory} onOpen={openProduct} />
+
+
+
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] rounded-full bg-gray-900 text-white text-sm px-5 py-2.5 shadow-lg">{toast}</div>
+      )}
+    </div>
+  );
+  function Crumb({ to, children }) {
+    return (
+      <Link
+        to={to}
+        className="no-underline px-1.5 py-0.5 rounded transition-colors"
+        style={{ color: "var(--title)" }}
+        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--button)"; e.currentTarget.style.color = "var(--button-text)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--title)"; }}
+      >
+        {children}
+      </Link>
+    );
+  }
+}
