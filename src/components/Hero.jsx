@@ -31,7 +31,7 @@ const Hero = () => {
   const go = (s) => s?.link && navigate(s.link);
 
   if (loading) {
-    return <div className="w-full bg-gray-100 overflow-hidden" style={{ aspectRatio: "16 / 9" }}><div className="h-full w-full bg-gray-200 animate-pulse" /></div>;
+    return <div className="w-full bg-gray-100 overflow-hidden" style={{ aspectRatio: "16 / 9" }}><div className="h-full w-full bg-black animate-pulse" /></div>;
   }
 
   if (slides.length === 0) {
