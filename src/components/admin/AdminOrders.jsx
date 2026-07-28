@@ -5,7 +5,8 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import { getOrders, updateOrderStatus } from "../../api";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { deleteOrder, getOrders, updateOrderStatus } from "../../api";
 
 const BRAND = "#E11D48";
 const taka = (n) => `\u09F3${Number(n || 0).toLocaleString("en-BD")}`;
@@ -30,6 +31,7 @@ export default function AdminOrders() {
   const [tab, setTab] = useState("All");
   const [openId, setOpenId] = useState(null);
   const [savingId, setSavingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   const load = () => {
     setLoading(true);
@@ -67,6 +69,22 @@ export default function AdminOrders() {
       setError(e.message || "Could not update status");
     } finally {
       setSavingId(null);
+    }
+  };
+
+  const removeOrder = async (order) => {
+    if (!window.confirm(`Delete order #${order.code}? This action cannot be undone.`)) return;
+
+    setDeletingId(order.id);
+    setError("");
+    try {
+      await deleteOrder(order.id);
+      setOrders((list) => list.filter((item) => item.id !== order.id));
+      if (openId === order.id) setOpenId(null);
+    } catch (e) {
+      setError(e.message || "Could not delete order");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -123,7 +141,7 @@ export default function AdminOrders() {
                 <th className="py-3 px-4 font-medium">Total</th>
                 <th className="py-3 px-4 font-medium">Payment</th>
                 <th className="py-3 px-4 font-medium">Status</th>
-                <th className="py-3 px-4 font-medium text-right">View</th>
+                <th className="py-3 px-4 font-medium text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -152,7 +170,17 @@ export default function AdminOrders() {
                       </select>
                     </td>
                     <td className="py-3 px-4 text-right">
-                      <button onClick={() => setOpenId(o.id)} className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-900" title="View details"><VisibilityOutlinedIcon style={{ fontSize: 19 }} /></button>
+                      <div className="inline-flex items-center gap-1">
+                        <button onClick={() => setOpenId(o.id)} className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-900" title="View details"><VisibilityOutlinedIcon style={{ fontSize: 19 }} /></button>
+                        <button
+                          onClick={() => removeOrder(o)}
+                          disabled={deletingId === o.id}
+                          className="p-1.5 rounded text-gray-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-40"
+                          title="Delete order"
+                        >
+                          <DeleteOutlineIcon style={{ fontSize: 19 }} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
