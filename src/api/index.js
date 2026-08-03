@@ -12,6 +12,8 @@ export * from "./hero";
 export * from "./reviews";          // <-- ADD THIS
 export * from "./sale";             // <-- ADD THIS
 export * from "./inventory";        // <-- ADD THIS
+export * from "./sizes";
+export * from "./sizeCharts";
 
 
 // export * from "./banners";

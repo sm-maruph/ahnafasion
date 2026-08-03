@@ -14,6 +14,8 @@ import { useCart } from "../context/CartContext";
 import ProductReviews from "./ProductReviews";
 import { useWishlist } from "../context/WishlistContext";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import StraightenOutlinedIcon from "@mui/icons-material/StraightenOutlined";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 
 const BRAND = "var(--brand)";
@@ -66,6 +68,28 @@ function RelatedRow({ title, items, onOpen }) {
       </div>
     </section>
   );
+}
+
+function SizeChart({ chart }) {
+  const [open, setOpen] = useState(true);
+  const [unit, setUnit] = useState("INCH");
+  if (!chart?.columns?.length || !chart?.rows?.length) return null;
+  const display = (value, column) => {
+    if (unit === "INCH" || column.toLowerCase() === "size" || value === "" || value == null) return value;
+    const number = Number(value);
+    return Number.isFinite(number) ? Number((number * 2.54).toFixed(1)) : value;
+  };
+  return <section className="mt-6 overflow-hidden rounded-xl border" style={{ borderColor: "var(--border)" }}>
+    <button onClick={() => setOpen((v) => !v)} className="w-full flex items-center gap-3 px-4 py-3 text-left" aria-expanded={open}>
+      <span className="h-8 w-8 rounded-md bg-gray-100 flex items-center justify-center text-gray-700"><StraightenOutlinedIcon style={{ fontSize: 18 }} /></span>
+      <span className="font-bold text-sm" style={{ color: "var(--title)" }}>{chart.heading || "Size Chart"}</span>
+      <ExpandMoreIcon className={`ml-auto transition-transform ${open ? "rotate-180" : ""}`} style={{ color: "var(--subtitle)" }} />
+    </button>
+    {open && <div className="border-t px-4 py-4" style={{ borderColor: "var(--border)" }}>
+      <div className="flex items-center justify-between gap-3 mb-3"><p className="text-xs" style={{ color: "var(--subtitle)" }}>{chart.note}</p><div className="inline-flex rounded-lg bg-gray-100 p-0.5">{["INCH", "CM"].map((u) => <button key={u} onClick={() => setUnit(u)} className={`rounded-md px-3 py-1.5 text-[10px] font-bold ${unit === u ? "bg-white shadow-sm text-gray-900" : "text-gray-500"}`}>{u}</button>)}</div></div>
+      <div className="overflow-x-auto rounded-lg border border-gray-200"><table className="w-full min-w-[520px] text-xs"><thead><tr className="bg-gray-100">{chart.columns.map((column) => <th key={column} className="px-3 py-2.5 text-left font-bold text-gray-800">{column}</th>)}</tr></thead><tbody>{chart.rows.map((row, index) => <tr key={index} className="border-t border-gray-200">{chart.columns.map((column) => <td key={column} className="px-3 py-2 text-gray-700">{display(row[column], column)}</td>)}</tr>)}</tbody></table></div>
+    </div>}
+  </section>;
 }
 
 export default function ProductDetail() {
@@ -135,10 +159,13 @@ export default function ProductDetail() {
 
   const needsSize = product?.sizes?.length > 0;
   const needsColor = product?.colors?.length > 0;
+  const selectedVariant = product?.sizeVariants?.find((v) => v.name === size);
+  const availableStock = selectedVariant ? selectedVariant.stock : Number(product?.stock || 0);
 
   const validate = () => {
     if (needsColor && !color) { setError("Please select a color first."); return false; }
     if (needsSize && !size) { setError("Please select a size first."); return false; }
+    if (needsSize && selectedVariant && selectedVariant.stock < qty) { setError(`Only ${selectedVariant.stock} item(s) available in size ${size}.`); return false; }
     if (!qty || qty < 1) { setError("Please select a quantity."); return false; }
     setError("");
     return true;
@@ -275,13 +302,17 @@ export default function ProductDetail() {
             <div className="mt-5">
               <p className="text-sm font-semibold" style={{ color: "var(--details)" }}>Select Size</p>
               <div className="flex flex-wrap gap-2">
-                {product.sizes.map((s) => (
-                  <button key={s} onClick={() => { setSize(s); setError(""); }} className="min-w-[44px] rounded-md border px-3 py-2 text-sm font-medium transition-colors"
+                {product.sizes.map((s) => {
+                  const variant = product.sizeVariants?.find((v) => v.name === s);
+                  const soldOut = variant && variant.stock <= 0;
+                  return <button key={s} disabled={soldOut} onClick={() => { setSize(s); setQty(1); setError(""); }} className="relative min-w-[44px] rounded-md border px-3 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+                    title={soldOut ? "Out of stock" : variant ? `${variant.stock} available` : ""}
                     style={size === s ? { backgroundColor: BRAND, borderColor: BRAND, color: "var(--button-text)" } : { backgroundColor: "var(--foreground)", borderColor: "var(--button)", color: "var(--button)" }}>
-                    {s}
+                    {s}{soldOut && <span className="absolute left-1 right-1 top-1/2 h-px rotate-[-18deg] bg-current" />}
                   </button>
-                ))}
+                })}
               </div>
+              {size && selectedVariant && <p className="mt-1 text-xs" style={{ color: "var(--subtitle)" }}>{selectedVariant.stock} available in size {size}</p>}
             </div>
           )}
 
@@ -299,7 +330,8 @@ export default function ProductDetail() {
               </button>
               <span className="px-4 text-sm font-semibold" style={{ color: "var(--details)" }}>{qty}</span>
               <button
-                onClick={() => setQty((q) => q + 1)}
+                onClick={() => setQty((q) => Math.min(availableStock || q + 1, q + 1))}
+                disabled={availableStock > 0 && qty >= availableStock}
                 className="px-3 py-2 transition-colors"
                 style={{ color: "var(--subtitle)" }}
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--button)"; e.currentTarget.style.color = "var(--button-text)"; }}
@@ -332,13 +364,12 @@ export default function ProductDetail() {
             <LocalShippingOutlinedIcon style={{ fontSize: 18 }} />
             Cash on delivery available • Delivery in 2–5 days
           </div>
+          <div className="mt-6 border-t border-gray-100 pt-5">
+            <h3 className="text-base font-bold" style={{ color: "var(--title)" }}>Product Description</h3>
+            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--details)" }}>{product.description}</p>
+            <SizeChart chart={product.sizeChart} />
+          </div>
         </div>
-      </div>
-
-      {/* Product Details — full width, below the grid */}
-      <div className="mt-10 border-t border-gray-100 pt-6">
-        <h3 className="text-base font-bold" style={{ color: "var(--title)" }}>Product Details</h3>
-        <p className="text-sm leading-relaxed max-w-4xl" style={{ color: "var(--details)" }}>{product.description}</p>
       </div>
       <ProductReviews productId={product.id} />
       <RelatedRow title="You may also like" items={related} onOpen={openProduct} />

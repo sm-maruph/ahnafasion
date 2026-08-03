@@ -7,7 +7,7 @@ import WarningAmberOutlinedIcon from "@mui/icons-material/WarningAmberOutlined";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { getInventory, setInventory, restockProduct } from "../../api";
+import { getInventory, setInventory, restockProduct, setVariantInventory } from "../../api";
 
 const BRAND = "#E11D48";
 const taka = (n) => `\u09F3${Number(n || 0).toLocaleString("en-BD")}`;
@@ -78,7 +78,12 @@ export default function AdminInventory() {
   const saveEdit = async () => {
     setBusy(true); setError("");
     try {
-      await setInventory(editRow.id, { stock: Number(editRow.stock), low_stock_threshold: Number(editRow.threshold) });
+      if (editRow.variants?.length) {
+        await Promise.all(editRow.variants.map((v) => setVariantInventory(v.id, Number(v.stock))));
+        await setInventory(editRow.id, { low_stock_threshold: Number(editRow.threshold) });
+      } else {
+        await setInventory(editRow.id, { stock: Number(editRow.stock), low_stock_threshold: Number(editRow.threshold) });
+      }
       setEditRow(null); load();
     } catch (e) { setError(e.message); } finally { setBusy(false); }
   };
@@ -180,6 +185,7 @@ export default function AdminInventory() {
                   <td className="py-3 px-4">
                     <span className="font-bold text-gray-900">{r.stock}</span>
                     <span className="text-xs text-gray-400"> / thr {r.threshold}</span>
+                    {r.variants?.length > 0 && <div className="mt-1 flex flex-wrap gap-1">{r.variants.map((v) => <span key={v.id} className={`text-[10px] px-1.5 py-0.5 rounded ${v.stock > 0 ? "bg-gray-100 text-gray-600" : "bg-red-50 text-red-600"}`}>{v.name}: {v.stock}</span>)}</div>}
                   </td>
                   <td className="py-3 px-4"><span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${LEVEL_STYLE[r.level]}`}>{LEVEL_LABEL[r.level]}</span></td>
                   <td className="py-3 px-4 text-gray-700 font-semibold">{r.orderedQty}<span className="text-xs font-normal text-gray-400"> total</span></td>
@@ -201,8 +207,8 @@ export default function AdminInventory() {
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => setRestockRow({ id: r.id, name: r.name, amount: r.suggestedRestock || 10 })} className="p-1.5 rounded hover:bg-green-50 text-gray-500 hover:text-green-700" title="Restock"><AddBoxOutlinedIcon style={{ fontSize: 18 }} /></button>
-                      <button onClick={() => setEditRow({ id: r.id, name: r.name, stock: r.stock, threshold: r.threshold })} className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-900" title="Edit stock/threshold"><EditOutlinedIcon style={{ fontSize: 18 }} /></button>
+                      {!r.variants?.length && <button onClick={() => setRestockRow({ id: r.id, name: r.name, amount: r.suggestedRestock || 10 })} className="p-1.5 rounded hover:bg-green-50 text-gray-500 hover:text-green-700" title="Restock"><AddBoxOutlinedIcon style={{ fontSize: 18 }} /></button>}
+                      <button onClick={() => setEditRow({ id: r.id, name: r.name, stock: r.stock, threshold: r.threshold, variants: r.variants.map((v) => ({ ...v })) })} className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-gray-900" title="Edit stock/threshold"><EditOutlinedIcon style={{ fontSize: 18 }} /></button>
                     </div>
                   </td>
                 </tr>
@@ -215,7 +221,8 @@ export default function AdminInventory() {
       {/* Edit stock modal */}
       {editRow && (
         <Modal title={`Edit · ${editRow.name}`} onClose={() => setEditRow(null)}>
-          <Field label="Stock quantity"><input type="number" value={editRow.stock} onChange={(e) => setEditRow((m) => ({ ...m, stock: e.target.value }))} className="inp" /></Field>
+          {editRow.variants?.length ? <div className="space-y-2"><p className="text-xs font-medium text-gray-500">Stock by size</p>{editRow.variants.map((variant, index) => <label key={variant.id} className="grid grid-cols-[1fr_130px] items-center gap-3"><span className="text-sm font-semibold text-gray-700">{variant.name}</span><input type="number" min="0" value={variant.stock} onChange={(e) => setEditRow((m) => ({ ...m, variants: m.variants.map((v, i) => i === index ? { ...v, stock: e.target.value } : v) }))} className="inp" /></label>)}</div>
+            : <Field label="Stock quantity"><input type="number" value={editRow.stock} onChange={(e) => setEditRow((m) => ({ ...m, stock: e.target.value }))} className="inp" /></Field>}
           <Field label="Low-stock threshold"><input type="number" value={editRow.threshold} onChange={(e) => setEditRow((m) => ({ ...m, threshold: e.target.value }))} className="inp" /></Field>
           <p className="text-xs text-gray-400">Warnings show when stock ≤ threshold.</p>
           <ModalActions busy={busy} onCancel={() => setEditRow(null)} onSave={saveEdit} saveLabel="Save" />

@@ -8,7 +8,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import StarIcon from "@mui/icons-material/Star";
 import {
-  getProducts, getProductBySlug, createProduct, updateProduct, deleteProduct, getCategoriesRaw,
+  getProducts, getProductBySlug, createProduct, updateProduct, deleteProduct, getCategoriesRaw, getSizeCharts,
 } from "../../api";
 
 const BRAND = "#E11D48";
@@ -27,16 +27,24 @@ const csvToArr = (csv) => String(csv).split(",").map((s) => s.trim()).filter(Boo
 
 const EMPTY_FORM = {
   id: null, slug: "", name: "", brand: "", category_id: "", subcategory_id: "",
-  price: "", oldPrice: "", stock: "", sizes: "", colors: "", description: "", tags: "",
+  price: "", oldPrice: "", stock: "", sizes: "", sizeVariants: [], sizeChartId: "", colors: "", description: "", tags: "",
 };
 
 function toForm(p) {
+  const savedVariants = p.sizeVariants || [];
+  const chartSizeNames = (p.sizeChart?.rows || []).map((row) => String(row.Size || row.size || "").trim()).filter(Boolean);
+  const sizeVariants = (chartSizeNames.length ? chartSizeNames : savedVariants.map((v) => v.name)).map((name) => {
+    const saved = savedVariants.find((variant) => variant.name.toLowerCase() === name.toLowerCase());
+    return { size_id: saved?.sizeId, name, stock: saved?.stock ?? 0 };
+  });
   return {
     id: p.id, slug: p.slug || "", name: p.name || "", brand: p.brand || "",
     category_id: p.category_id || "", subcategory_id: p.subcategory_id || "",
     price: p.price ?? "", oldPrice: p.oldPrice ?? "",
     stock: p.stock ?? (p.inStock ? 0 : 0),
     sizes: (p.sizes || []).join(", "),
+    sizeVariants,
+    sizeChartId: p.sizeChartId || "",
     colors: (p.colors || []).map((c) => (typeof c === "string" ? c : c.name)).join(", "),
     description: p.description || "", tags: (p.tags || []).join(", "),
   };
@@ -45,6 +53,7 @@ function toForm(p) {
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [cats, setCats] = useState([]);
+  const [sizeCharts, setSizeCharts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -72,6 +81,7 @@ export default function AdminProducts() {
   useEffect(() => {
     loadProducts();
     getCategoriesRaw().then(setCats).catch(() => {});
+    getSizeCharts().then(setSizeCharts).catch(() => {});
   }, []);
 
   const catNames = useMemo(() => cats.map((c) => c.name), [cats]);
@@ -113,6 +123,18 @@ export default function AdminProducts() {
 
   const close = () => setModalOpen(false);
   const setField = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const selectSizeChart = (chartId) => {
+    const chart = sizeCharts.find((item) => item.id === chartId);
+    const names = (chart?.rows || []).map((row) => String(row.Size || row.size || "").trim()).filter(Boolean);
+    setForm((current) => ({
+      ...current,
+      sizeChartId: chartId,
+      sizeVariants: names.map((name) => {
+        const previous = current.sizeVariants.find((variant) => variant.name.toLowerCase() === name.toLowerCase());
+        return { size_id: previous?.size_id, name, stock: previous?.stock ?? 0 };
+      }),
+    }));
+  };
 
   const onPickImages = (e) => {
     const picked = Array.from(e.target.files || []);
@@ -152,8 +174,10 @@ export default function AdminProducts() {
       subcategory_id: form.subcategory_id || undefined,
       price: Number(form.price),
       old_price: form.oldPrice === "" ? undefined : Number(form.oldPrice),
-      stock: Number(form.stock || 0),
-      sizes: csvToArr(form.sizes),
+      stock: form.sizeVariants.length ? form.sizeVariants.reduce((sum, v) => sum + Number(v.stock || 0), 0) : Number(form.stock || 0),
+      sizes: form.sizeVariants.map((v) => v.name),
+      size_variants: form.sizeVariants,
+      size_chart_id: form.sizeChartId,
       colors: toColorObjs(form.colors),
       tags: csvToArr(form.tags),
     };
@@ -283,14 +307,14 @@ export default function AdminProducts() {
 
       {/* ===== Add / Edit modal ===== */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-3 sm:p-6 bg-black/40 overflow-y-auto">
-          <div className="bg-white rounded-2xl w-full max-w-2xl my-4 shadow-xl">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl z-10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/40 overflow-hidden">
+          <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-3rem)] shadow-xl flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white shrink-0">
               <h3 className="text-lg font-bold text-gray-900">{form.id ? "Edit Product" : "Add Product"}</h3>
               <button onClick={close} className="text-gray-400 hover:text-gray-700"><CloseIcon /></button>
             </div>
 
-            <div className="p-5 space-y-4">
+            <div className="p-5 space-y-4 overflow-y-auto overscroll-contain">
               {modalLoading && <div className="text-sm text-gray-400">Loading product…</div>}
 
               {/* Images */}
@@ -346,8 +370,15 @@ export default function AdminProducts() {
                 </Field>
                 <Field label="Price (৳) *" error={errors.price}><input type="number" value={form.price} onChange={(e) => setField("price", e.target.value)} className="inp" placeholder="990" /></Field>
                 <Field label="Old price (৳)" error={errors.oldPrice}><input type="number" value={form.oldPrice} onChange={(e) => setField("oldPrice", e.target.value)} className="inp" placeholder="1290 (optional)" /></Field>
-                <Field label="Stock quantity"><input type="number" value={form.stock} onChange={(e) => setField("stock", e.target.value)} className="inp" placeholder="25" /></Field>
-                <Field label="Sizes (comma separated)"><input value={form.sizes} onChange={(e) => setField("sizes", e.target.value)} className="inp" placeholder="S, M, L, XL" /></Field>
+                <div className="sm:col-span-2"><Field label="Size chart template"><select value={form.sizeChartId} onChange={(e) => selectSizeChart(e.target.value)} className="inp"><option value="">— No size chart / no size stock —</option>{sizeCharts.map((chart) => <option key={chart.id} value={chart.id}>{chart.template_name}</option>)}</select></Field></div>
+                {!form.sizeChartId && <Field label="Stock quantity"><input type="number" min="0" value={form.stock} onChange={(e) => setField("stock", e.target.value)} className="inp" placeholder="25" /></Field>}
+                {form.sizeChartId && <div className="sm:col-span-2">
+                  <span className="text-xs font-medium text-gray-500">Stock by size</span>
+                  <div className="mt-2 rounded-lg border border-gray-200 p-3 grid sm:grid-cols-2 gap-3">
+                    {form.sizeVariants.length === 0 ? <p className="text-xs text-amber-600 sm:col-span-2">This chart has no size rows. Add sizes to the chart first.</p> : form.sizeVariants.map((variant, index) => <Field key={`${variant.name}-${index}`} label={`${variant.name} stock`}><input type="number" min="0" value={variant.stock} className="inp" onChange={(e) => setField("sizeVariants", form.sizeVariants.map((item, i) => i === index ? { ...item, stock: Math.max(0, Number(e.target.value)) } : item))} /></Field>)}
+                  </div>
+                  <p className="mt-1 text-[11px] text-gray-400">Total stock: {form.sizeVariants.reduce((sum, v) => sum + Number(v.stock || 0), 0)}</p>
+                </div>}
                 <Field label="Colors (comma separated)"><input value={form.colors} onChange={(e) => setField("colors", e.target.value)} className="inp" placeholder="Black, White, Navy" /></Field>
                 <Field label="Tags (comma separated)"><input value={form.tags} onChange={(e) => setField("tags", e.target.value)} className="inp" placeholder="new, summer" /></Field>
               </div>
@@ -355,7 +386,7 @@ export default function AdminProducts() {
               <Field label="Description"><textarea value={form.description} onChange={(e) => setField("description", e.target.value)} rows={3} className="inp resize-none" placeholder="Short product description…" /></Field>
             </div>
 
-            <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-100">
+            <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-100 bg-white shrink-0">
               <button onClick={close} className="rounded-lg px-4 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-100">Cancel</button>
               <button onClick={save} disabled={saving || modalLoading} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60" style={{ backgroundColor: BRAND }}>
                 {saving ? "Saving…" : form.id ? "Save Changes" : "Add Product"}

@@ -42,6 +42,7 @@ import RequireAdmin from "./components/admin/RequireAdmin";
 import AdminCollections from "./components/admin/AdminCollections";
 import AdminHero from "./components/admin/AdminHero";
 import AdminInventory from "./components/admin/AdminInventory";
+import AdminSizeCharts from "./components/admin/AdminSizeCharts";
 
 
 import Partners from "./components/Partner";
@@ -130,6 +131,7 @@ function App() {
             <Route index element={<AdminDashboard />} />
             <Route path="products" element={<AdminProducts />} />
             <Route path="inventory" element={<AdminInventory />} />   {/* <-- ADD THIS */}
+            <Route path="size-charts" element={<AdminSizeCharts />} />
 
             <Route path="categories" element={<AdminCategories />} />
             <Route path="orders" element={<AdminOrders />} />

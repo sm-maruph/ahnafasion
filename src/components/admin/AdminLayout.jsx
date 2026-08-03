@@ -12,6 +12,7 @@ import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import ViewCarouselOutlinedIcon from "@mui/icons-material/ViewCarouselOutlined";
 import CollectionsOutlinedIcon from "@mui/icons-material/CollectionsOutlined";
+import StraightenOutlinedIcon from "@mui/icons-material/StraightenOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
@@ -26,6 +27,7 @@ const NAV = [
   { to: "/admin", label: "Dashboard", icon: DashboardOutlinedIcon, end: true },
   { to: "/admin/products", label: "Products", icon: Inventory2OutlinedIcon },
   { to: "/admin/inventory", label: "Inventory", icon: WarehouseOutlinedIcon },
+  { to: "/admin/size-charts", label: "Size Charts", icon: StraightenOutlinedIcon },
   { to: "/admin/categories", label: "Categories", icon: CategoryOutlinedIcon },
   { to: "/admin/orders", label: "Orders", icon: ReceiptLongOutlinedIcon },
   { to: "/admin/hero", label: "Hero Banners", icon: ViewCarouselOutlinedIcon },
