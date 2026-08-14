@@ -5,8 +5,16 @@ import { getSettings } from "../api";
 const SettingsContext = createContext(null);
 
 const DEFAULT_THEME = {
-  brand: "#0BOBOB", men: "#E11D48", women: "#DB2777",
+  brand: "#D4AF37", men: "#D4AF37", women: "#D4AF37",
   kids: "#F59E0B", accessories: "#0D9488", sale: "#7C3AED",
+};
+
+const safeAccent = (value, fallback = "#D4AF37") => {
+  if (!/^#[0-9a-f]{6}$/i.test(String(value || ""))) return fallback;
+  const hex = value.slice(1);
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  // Prevent near-black accents from disappearing against the storefront.
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) < 70 ? fallback : value;
 };
 
 const FALLBACK = {
@@ -19,6 +27,7 @@ const FALLBACK = {
 // Write the theme onto :root so the whole site can use var(--brand) etc.
 export function applyTheme(theme = {}) {
   const t = { ...DEFAULT_THEME, ...theme };
+  t.brand = safeAccent(t.brand);
   const root = document.documentElement;
   root.style.setProperty("--brand", t.brand);
   root.style.setProperty("--accent-men", t.men);

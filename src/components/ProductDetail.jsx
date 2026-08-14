@@ -86,8 +86,8 @@ function SizeChart({ chart }) {
       <ExpandMoreIcon className={`ml-auto transition-transform ${open ? "rotate-180" : ""}`} style={{ color: "var(--subtitle)" }} />
     </button>
     {open && <div className="border-t px-4 py-4" style={{ borderColor: "var(--border)" }}>
-      <div className="flex items-center justify-between gap-3 mb-3"><p className="text-xs" style={{ color: "var(--subtitle)" }}>{chart.note}</p><div className="inline-flex rounded-lg bg-gray-100 p-0.5">{["INCH", "CM"].map((u) => <button key={u} onClick={() => setUnit(u)} className={`rounded-md px-3 py-1.5 text-[10px] font-bold ${unit === u ? "bg-white shadow-sm text-gray-900" : "text-gray-500"}`}>{u}</button>)}</div></div>
-      <div className="overflow-x-auto overscroll-x-contain rounded-lg border" style={{ borderColor: "var(--border)", WebkitOverflowScrolling: "touch" }}><table className="w-full min-w-[440px] sm:min-w-[520px] text-[11px] sm:text-xs"><thead><tr className="bg-gray-100">{chart.columns.map((column) => <th key={column} className="px-2 sm:px-3 py-2.5 text-left font-bold text-gray-800 whitespace-nowrap">{column}</th>)}</tr></thead><tbody>{chart.rows.map((row, index) => <tr key={index} className="border-t" style={{ borderColor: "var(--border)" }}>{chart.columns.map((column) => <td key={column} className="px-2 sm:px-3 py-2 whitespace-nowrap" style={{ color: "var(--details)" }}>{display(row[column], column)}</td>)}</tr>)}</tbody></table></div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 mb-3"><p className="text-xs" style={{ color: "var(--subtitle)" }}>{chart.note}</p><div className="inline-flex self-end sm:self-auto shrink-0 rounded-lg bg-gray-100 p-0.5">{["INCH", "CM"].map((u) => <button key={u} onClick={() => setUnit(u)} className={`rounded-md px-3 py-1.5 text-[10px] font-bold ${unit === u ? "bg-white shadow-sm text-gray-900" : "text-gray-500"}`}>{u}</button>)}</div></div>
+      <div className="w-full overflow-hidden rounded-lg border" style={{ borderColor: "var(--border)" }}><table className="w-full table-fixed text-[10px] sm:text-xs"><thead><tr className="bg-gray-100">{chart.columns.map((column) => <th key={column} className="px-1.5 sm:px-3 py-2.5 text-left font-bold text-gray-800 break-words">{column}</th>)}</tr></thead><tbody>{chart.rows.map((row, index) => <tr key={index} className="border-t" style={{ borderColor: "var(--border)" }}>{chart.columns.map((column) => <td key={column} className="px-1.5 sm:px-3 py-2 break-words" style={{ color: "var(--details)" }}>{display(row[column], column)}</td>)}</tr>)}</tbody></table></div>
     </div>}
   </section>;
 }
@@ -346,13 +346,13 @@ export default function ProductDetail() {
 
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button onClick={addToCart} disabled={!product.inStock}
-              className="w-full flex items-center justify-center gap-2 rounded-md border-2 py-3 text-sm font-bold transition-colors disabled:opacity-40"
-              style={{ borderColor: BRAND, color: BRAND }}
+              className="w-full flex items-center justify-center gap-2 rounded-md border-2 py-3 text-sm font-bold transition-colors disabled:cursor-not-allowed"
+              style={{ borderColor: product.inStock ? BRAND : "var(--border)", color: product.inStock ? BRAND : "var(--subtitle)", opacity: product.inStock ? 1 : 0.7 }}
               onMouseEnter={(e) => { if (product.inStock) { e.currentTarget.style.backgroundColor = BRAND; e.currentTarget.style.color = "var(--button-text)"; } }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = BRAND; }}>
+              onMouseLeave={(e) => { if (product.inStock) { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = BRAND; } }}>
               <ShoppingBagOutlinedIcon style={{ fontSize: 18 }} /> Add to Cart
             </button>
-            <button onClick={buyNow} disabled={!product.inStock} className="w-full rounded-md py-3 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-40" style={{ backgroundColor: BRAND }}>
+            <button onClick={buyNow} disabled={!product.inStock} className="w-full rounded-md py-3 text-sm font-bold transition-opacity hover:opacity-90 disabled:cursor-not-allowed" style={{ backgroundColor: product.inStock ? BRAND : "var(--foreground)", color: product.inStock ? "var(--button-text)" : "var(--subtitle)", border: "1px solid var(--border)", opacity: product.inStock ? 1 : 0.7 }}>
               Buy Now
             </button>
             <button onClick={() => toggle(product)} aria-label="Wishlist" className="sm:col-span-2 rounded-md border border-var(--title) px-3 py-2.5 transition-colors hover:border-gray-300" style={{ color: wished ? BRAND : "var(--title)" }}>
