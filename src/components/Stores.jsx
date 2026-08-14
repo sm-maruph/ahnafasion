@@ -10,7 +10,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 const BRAND = "var(--brand)";
 const imgFallback = (e) => {
   e.target.onerror = null;
-  e.target.src = "https://placehold.co/600x400/f3f4f6/9ca3af?text=RAINZ+Store";
+  e.target.src = "https://placehold.co/600x400/f3f4f6/9ca3af?text=Ahnaf+Fashion";
 };
 
 // Dummy store data — replace with your real outlets / API later.
@@ -116,7 +116,7 @@ export default function Stores() {
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-2xl md:text-3xl font-extrabold" style={{ color: "var(--title)" }}>Our Stores</h1>
-        <p className="mt-1 text-sm" style={{ color: "var(--subtitle)" }}>Visit a RAINZLIFESTYLE outlet near you.</p>
+        <p className="mt-1 text-sm" style={{ color: "var(--subtitle)" }}>Visit an Ahnaf Fashion outlet near you.</p>
       </div>
 
       {/* City filter */}

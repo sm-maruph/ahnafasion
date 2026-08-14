@@ -2,7 +2,7 @@ import { api } from "./apiClient";
 
 // DB (snake) -> UI (camel)
 export const mapSettings = (s = {}) => ({
-  storeName: s.store_name || "RAINZLIFESTYLE",
+  storeName: s.store_name || "Ahnaf Fashion",
   tagline: s.tagline || "",
   currency: s.currency || "BDT",
   supportEmail: s.support_email || "",

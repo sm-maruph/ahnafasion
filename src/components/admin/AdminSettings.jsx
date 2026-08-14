@@ -36,10 +36,10 @@ const DEFAULT_PAYMENTS = [
 ];
 
 const SOCIALS = [
-  { key: "facebook", label: "Facebook", icon: FacebookIcon, ph: "https://facebook.com/rainzlifestyle" },
-  { key: "instagram", label: "Instagram", icon: InstagramIcon, ph: "https://instagram.com/rainzlifestyle" },
-  { key: "youtube", label: "YouTube", icon: YouTubeIcon, ph: "https://youtube.com/@rainzlifestyle" },
-  { key: "tiktok", label: "TikTok", icon: MusicNoteIcon, ph: "https://tiktok.com/@rainzlifestyle" },
+  { key: "facebook", label: "Facebook", icon: FacebookIcon, ph: "https://facebook.com/ahnaffashion" },
+  { key: "instagram", label: "Instagram", icon: InstagramIcon, ph: "https://instagram.com/ahnaffashion" },
+  { key: "youtube", label: "YouTube", icon: YouTubeIcon, ph: "https://youtube.com/@ahnaffashion" },
+  { key: "tiktok", label: "TikTok", icon: MusicNoteIcon, ph: "https://tiktok.com/@ahnaffashion" },
   { key: "whatsapp", label: "WhatsApp", icon: WhatsAppIcon, ph: "+8801XXXXXXXXX" },
 ];
 

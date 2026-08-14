@@ -19,7 +19,7 @@ const COLORS = {
 };
 
 const NAV_LINKS = [
-  { label: "About RainzLifestyle", href: "#" },
+  { label: "About Ahnaf Fashion", href: "#" },
   { label: "Terms & Conditions", href: "#" },
   { label: "Privacy Policy", href: "#" },
   { label: "Cancellation & Return Policy", href: "#" },
@@ -126,7 +126,7 @@ const Footer = () => {
     setTimeout(() => setSubscribeStatus(null), 3000);
   };
 
-  const storeName = settings.storeName || "RainzLifestyle";
+  const storeName = settings.storeName || "Ahnaf Fashion";
   const social = settings.social || {};
 
   const socialHref = (key, val) => {
@@ -256,11 +256,11 @@ const Footer = () => {
                 <div>
                   <p className="text-sm font-medium text-white">Email Us</p>
                   <a
-                    href={`mailto:${settings.supportEmail || "support@rainzlifestyle.com"}`}
+                    href={`mailto:${settings.supportEmail || "support@ahnaffashion.com"}`}
                     className="mt-0.5 block text-sm transition-colors hover:text-white"
                     style={{ color: COLORS.textMuted }}
                   >
-                    {settings.supportEmail || "support@rainzlifestyle.com"}
+                    {settings.supportEmail || "support@ahnaffashion.com"}
                   </a>
                 </div>
               </div>

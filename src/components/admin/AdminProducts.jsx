@@ -355,7 +355,7 @@ export default function AdminProducts() {
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <Field label="Name *" error={errors.name}><input value={form.name} onChange={(e) => setField("name", e.target.value)} className="inp" placeholder="Cotton Polo Shirt" /></Field>
-                <Field label="Brand"><input value={form.brand} onChange={(e) => setField("brand", e.target.value)} className="inp" placeholder="RAINZ" /></Field>
+                <Field label="Brand"><input value={form.brand} onChange={(e) => setField("brand", e.target.value)} className="inp" placeholder="Ahnaf Fashion" /></Field>
                 <Field label="Category">
                   <select value={form.category_id} onChange={(e) => { setField("category_id", e.target.value); setField("subcategory_id", ""); }} className="inp">
                     <option value="">— none —</option>

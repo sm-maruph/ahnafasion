@@ -21,24 +21,24 @@ export default function AuthLayout({ title, subtitle, children, footer }) {
         <Sparkle size={120} style={{ position: "absolute", bottom: 60, left: -10 }} />
 
         <Link to="/" className="relative z-10 text-2xl font-extrabold tracking-tight">
-          RAINZ<span className="font-light opacity-80">LIFESTYLE</span>
+          AHNAF <span className="font-light opacity-80">FASHION</span>
         </Link>
 
         <div className="relative z-10">
           <h2 className="text-4xl font-bold leading-tight">Comfort meets confidence.</h2>
           <p className="mt-3 text-white/80 max-w-sm">
-            Discover premium clothing crafted for everyday style. Join RAINZLIFESTYLE for exclusive drops and member-only offers.
+            Discover premium clothing crafted for everyday style. Join Ahnaf Fashion for exclusive drops and member-only offers.
           </p>
         </div>
 
-        <p className="relative z-10 text-white/60 text-sm">© 2026 RAINZLIFESTYLE. All rights reserved.</p>
+        <p className="relative z-10 text-white/60 text-sm">© 2026 Ahnaf Fashion. All rights reserved.</p>
       </div>
 
       {/* Form side */}
       <div className="flex items-center justify-center p-6 bg-white">
         <div className="w-full max-w-md">
           <Link to="/" className="lg:hidden block text-center text-2xl font-extrabold mb-8 text-gray-900">
-            RAINZ<span className="font-light text-gray-400">LIFESTYLE</span>
+            AHNAF <span className="font-light text-gray-400">FASHION</span>
           </Link>
           <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
           {subtitle && <p className="mt-1 text-sm text-gray-500">{subtitle}</p>}

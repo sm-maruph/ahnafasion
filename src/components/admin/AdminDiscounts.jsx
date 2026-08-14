@@ -237,7 +237,7 @@ export default function AdminDiscounts() {
             <div className="p-5 space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <Field label="Coupon code *" error={errors.code}>
-                  <input value={modal.code} onChange={(e) => setField("code", e.target.value.toUpperCase())} className="inp font-mono" placeholder="RAINZ10" />
+                  <input value={modal.code} onChange={(e) => setField("code", e.target.value.toUpperCase())} className="inp font-mono" placeholder="AHNAF10" />
                 </Field>
                 <Field label="Type">
                   <select value={modal.type} onChange={(e) => setField("type", e.target.value)} className="inp">

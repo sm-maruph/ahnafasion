@@ -63,7 +63,7 @@ export default function Login() {
               </div>
             )}
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight uppercase leading-tight">
-              {settings.storeName || "RAINZLIFESTYLE"}
+              {settings.storeName || "Ahnaf Fashion"}
             </h1>
             <p className="mt-2 sm:mt-3 text-white/80 sm:text-white/90 text-sm sm:text-base leading-relaxed">
               Welcome back. Sign in to manage orders, wishlists, and faster checkout.

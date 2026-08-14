@@ -38,7 +38,7 @@ const Hero = () => {
     return (
       <div className="w-full flex items-center justify-center bg-gradient-to-r from-gray-100 to-gray-200 overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
         <div className="text-center text-gray-400">
-          <p className="text-lg font-semibold">RAINZLIFESTYLE</p>
+          <p className="text-lg font-semibold">AHNAF FASHION</p>
           <p className="text-sm">Add hero slides in the admin panel to feature them here.</p>
         </div>
       </div>

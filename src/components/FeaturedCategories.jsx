@@ -205,7 +205,7 @@ function Spotlight({ spotlight, products, loading, onOpen, onGo, onAdd, onBuyNow
 }
 
 export default function FeaturedCategories({
-  brandName = "RAINZLIFESTYLE",
+  brandName = "Ahnaf Fashion",
   brandLink = "/new-arrivals",
   tagline = "Because comfort and confidence go hand in hand.",
   description = "We focus on carefully selecting the best clothing that is comfortable, looks great, and makes you confident. Beyond fabric, design, and fit, every piece passes strict quality checks — because the right outfit changes how you see yourself.",

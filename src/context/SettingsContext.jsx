@@ -10,7 +10,7 @@ const DEFAULT_THEME = {
 };
 
 const FALLBACK = {
-  storeName: "RAINZLIFESTYLE", tagline: "", currency: "BDT", supportEmail: "", supportPhone: "",
+  storeName: "Ahnaf Fashion", tagline: "", currency: "BDT", supportEmail: "", supportPhone: "",
   logo: "", address: "", city: "", hours: "",
   delivery: { inside: 80, outside: 120, freeThreshold: 0 },
   payments: [], social: {}, maintenance: false, theme: DEFAULT_THEME,

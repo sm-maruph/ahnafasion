@@ -80,7 +80,7 @@ function Brand() {
         )}
         <span className="text-xl font-extrabold tracking-tight text-gray-900">
           {(() => {
-            const name = settings.storeName || "RAINZLIFESTYLE";
+            const name = settings.storeName || "Ahnaf Fashion";
             const i = name.toUpperCase().indexOf("LIFESTYLE");
             return i > 0
               ? <>{name.slice(0, i)}<span className="font-light text-gray-500">{name.slice(i)}</span></>

@@ -20,7 +20,7 @@ const SOCIALS = [
 
 export default function MaintenancePage() {
   const { settings } = useSettings();
-  const storeName = settings.storeName || "RAINZLIFESTYLE";
+  const storeName = settings.storeName || "Ahnaf Fashion";
   const social = settings.social || {};
 
   const socialHref = (key, val) => {
