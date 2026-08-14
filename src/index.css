@@ -86,3 +86,82 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Thin gold hairline borders — the "luxury detail" look */
 .gold-border { border: 1px solid var(--border); }
+
+/*
+ * Storefront contrast safety net
+ *
+ * Several screens were originally authored for a light theme and use
+ * Tailwind's dark gray text utilities on transparent surfaces. The live
+ * storefront is dark, so remap those utilities to accessible theme colors.
+ * Admin pages are intentionally excluded, and light cards restore the
+ * original dark palette below.
+ */
+.storefront .text-black,
+.storefront .text-gray-700,
+.storefront .text-gray-800,
+.storefront .text-gray-900,
+.storefront .text-slate-700,
+.storefront .text-slate-800,
+.storefront .text-slate-900,
+.storefront .text-zinc-700,
+.storefront .text-zinc-800,
+.storefront .text-zinc-900,
+.storefront .text-neutral-700,
+.storefront .text-neutral-800,
+.storefront .text-neutral-900 {
+  color: var(--details);
+}
+
+.storefront .text-gray-500,
+.storefront .text-gray-600,
+.storefront .text-slate-500,
+.storefront .text-slate-600,
+.storefront .text-zinc-500,
+.storefront .text-zinc-600,
+.storefront .text-neutral-500,
+.storefront .text-neutral-600 {
+  color: var(--subtitle);
+}
+
+/* Keep light-theme content legible when it sits inside an actual light card. */
+.storefront :is(.bg-white, .bg-gray-50, .bg-gray-100) .text-black { color: #000; }
+.storefront :is(.bg-white, .bg-gray-50, .bg-gray-100) .text-gray-500 { color: #6b7280; }
+.storefront :is(.bg-white, .bg-gray-50, .bg-gray-100) .text-gray-600 { color: #4b5563; }
+.storefront :is(.bg-white, .bg-gray-50, .bg-gray-100) .text-gray-700 { color: #374151; }
+.storefront :is(.bg-white, .bg-gray-50, .bg-gray-100) .text-gray-800 { color: #1f2937; }
+.storefront :is(.bg-white, .bg-gray-50, .bg-gray-100) .text-gray-900 { color: #111827; }
+.storefront :is(.bg-white, .bg-gray-50, .bg-gray-100).text-black { color: #000; }
+.storefront :is(.bg-white, .bg-gray-50, .bg-gray-100).text-gray-500 { color: #6b7280; }
+.storefront :is(.bg-white, .bg-gray-50, .bg-gray-100).text-gray-600 { color: #4b5563; }
+.storefront :is(.bg-white, .bg-gray-50, .bg-gray-100).text-gray-700 { color: #374151; }
+.storefront :is(.bg-white, .bg-gray-50, .bg-gray-100).text-gray-800 { color: #1f2937; }
+.storefront :is(.bg-white, .bg-gray-50, .bg-gray-100).text-gray-900 { color: #111827; }
+
+/* Native form controls otherwise retain browser/light-theme text colors. */
+.storefront input:not([type="checkbox"]):not([type="radio"]),
+.storefront textarea,
+.storefront select {
+  color: var(--details);
+  background-color: var(--foreground);
+  border-color: var(--border);
+}
+
+.storefront input::placeholder,
+.storefront textarea::placeholder {
+  color: var(--subtitle);
+  opacity: 0.8;
+}
+
+.storefront :is(.bg-white, .bg-gray-50, .bg-gray-100) input:not([type="checkbox"]):not([type="radio"]),
+.storefront :is(.bg-white, .bg-gray-50, .bg-gray-100) textarea,
+.storefront :is(.bg-white, .bg-gray-50, .bg-gray-100) select {
+  color: #111827;
+  background-color: #fff;
+  border-color: #d1d5db;
+}
+
+.storefront :is(input, textarea, select).bg-white {
+  color: #111827;
+  background-color: #fff;
+  border-color: #d1d5db;
+}

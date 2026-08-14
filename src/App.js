@@ -115,7 +115,7 @@ function App() {
       <AutoScrollUp />
 
       <main
-        className="w-full mx-auto min-h-screen overflow-x-hidden pb-16 md:pb-0"
+        className={`${isAdminPage ? "admin-page" : "storefront"} w-full mx-auto min-h-screen overflow-x-hidden pb-16 md:pb-0`}
         style={{ paddingTop: isAdminPage ? 0 : navHeight, backgroundColor: "var(--primary)" }}
       >
         <Routes>

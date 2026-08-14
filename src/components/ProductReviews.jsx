@@ -130,7 +130,7 @@ export default function ProductReviews({ productId }) {
           {loading ? (
             <div className="space-y-4">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-20 bg-gray-100 rounded-lg animate-pulse" />)}</div>
           ) : items.length === 0 ? (
-            <p className="text-var(--subtitle) text-sm py-8 text-center">No reviews yet — be the first to review this product.</p>
+            <p className="text-sm py-8 text-center" style={{ color: "var(--subtitle)" }}>No reviews yet — be the first to review this product.</p>
           ) : (
             <div className="space-y-5">
               {items.map((r) => (
@@ -145,7 +145,7 @@ export default function ProductReviews({ productId }) {
                     </div>
                   </div>
                   {r.title && <p className="mt-2 text-sm font-semibold" style={{ color: "var(--details)" }}>{r.title}</p>}
-                  {r.comment && <p className="mt-1 text-sm" style={{ color: "var(--subtitle)" }} className="leading-relaxed">{r.comment}</p>}
+                  {r.comment && <p className="mt-1 text-sm leading-relaxed" style={{ color: "var(--subtitle)" }}>{r.comment}</p>}
                 </div>
               ))}
             </div>

@@ -87,7 +87,7 @@ function SizeChart({ chart }) {
     </button>
     {open && <div className="border-t px-4 py-4" style={{ borderColor: "var(--border)" }}>
       <div className="flex items-center justify-between gap-3 mb-3"><p className="text-xs" style={{ color: "var(--subtitle)" }}>{chart.note}</p><div className="inline-flex rounded-lg bg-gray-100 p-0.5">{["INCH", "CM"].map((u) => <button key={u} onClick={() => setUnit(u)} className={`rounded-md px-3 py-1.5 text-[10px] font-bold ${unit === u ? "bg-white shadow-sm text-gray-900" : "text-gray-500"}`}>{u}</button>)}</div></div>
-      <div className="overflow-x-auto rounded-lg border border-gray-200"><table className="w-full min-w-[520px] text-xs"><thead><tr className="bg-gray-100">{chart.columns.map((column) => <th key={column} className="px-3 py-2.5 text-left font-bold text-gray-800">{column}</th>)}</tr></thead><tbody>{chart.rows.map((row, index) => <tr key={index} className="border-t border-gray-200">{chart.columns.map((column) => <td key={column} className="px-3 py-2 text-gray-700">{display(row[column], column)}</td>)}</tr>)}</tbody></table></div>
+      <div className="overflow-x-auto rounded-lg border" style={{ borderColor: "var(--border)" }}><table className="w-full min-w-[520px] text-xs"><thead><tr className="bg-gray-100">{chart.columns.map((column) => <th key={column} className="px-3 py-2.5 text-left font-bold text-gray-800">{column}</th>)}</tr></thead><tbody>{chart.rows.map((row, index) => <tr key={index} className="border-t" style={{ borderColor: "var(--border)" }}>{chart.columns.map((column) => <td key={column} className="px-3 py-2" style={{ color: "var(--details)" }}>{display(row[column], column)}</td>)}</tr>)}</tbody></table></div>
     </div>}
   </section>;
 }
