@@ -49,7 +49,7 @@ export default function QuickAddModal({ slug, onClose }) {
 
   return (
     <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-sm" onClick={onClose}>
-      <div className="rounded-2xl w-full max-w-md shadow-2xl border" style={{ backgroundColor: "var(--foreground)", borderColor: "var(--border)" }} onClick={(e) => e.stopPropagation()}>
+      <div className="rounded-2xl w-full max-w-md max-h-[calc(100svh-1.5rem)] overflow-hidden shadow-2xl border" style={{ backgroundColor: "var(--foreground)", borderColor: "var(--border)" }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "var(--border)" }}>
           <h3 className="text-base font-bold font-heading" style={{ color: "var(--title)" }}>Add to Bag</h3>
           <button onClick={onClose} className="transition-colors hover:opacity-70" style={{ color: "var(--subtitle)" }}><CloseIcon /></button>

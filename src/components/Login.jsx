@@ -46,7 +46,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-2 sm:p-4" style={{ backgroundColor: "var(--primary)" }}>
-      <div className="w-full max-w-5xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[98vh] md:max-h-none">
+      <div className="w-full max-w-5xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-x-hidden overflow-y-auto md:overflow-hidden flex flex-col md:flex-row max-h-[98svh] md:max-h-none">
         {/* Brand Panel */}
         <div
           className="md:w-1/2 p-6 sm:p-8 md:p-12 flex flex-col justify-center text-white"

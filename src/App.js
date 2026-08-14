@@ -94,6 +94,7 @@ function App() {
   // Admins and the login page must stay reachable, otherwise turning
   // maintenance OFF again would require a database edit.
   const isLoginPage = ["/login", "/register"].includes(location.pathname);
+  const isCheckoutPage = location.pathname === "/checkout";
   const stillLoading = authLoading || settingsLoading;
 
   if (settings.maintenance && !stillLoading && !isAdmin && !isAdminPage && !isLoginPage) {
@@ -179,7 +180,7 @@ function App() {
       {!isAdminPage && !isLoginPage && (
         <>
           <Footer />
-          <MobileBottomNav />
+          {!isCheckoutPage && <MobileBottomNav />}
         </>
       )}
     </>

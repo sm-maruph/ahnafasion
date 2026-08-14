@@ -108,7 +108,7 @@ export default function Cart() {
                     <DeleteOutlineIcon style={{ fontSize: 20 }} />
                   </button>
                 </div>
-                <p className="text-xs" style={{ color: "var(--subtitle)" }} className="mt-0.5 truncate">
+                <p className="mt-0.5 truncate text-xs" style={{ color: "var(--subtitle)" }}>
                   {[it.size, it.color].filter(Boolean).join(" • ")}
                 </p>
 

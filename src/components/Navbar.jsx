@@ -239,7 +239,7 @@ const Navbar = forwardRef(
             <SearchBar className="hidden md:block flex-1 min-w-[200px]" />
 
             {/* Actions */}
-            <div className="hidden md:flex items-center gap-4 lg:gap-5 shrink-0">
+            <div className="hidden xl:flex items-center gap-4 lg:gap-5 shrink-0">
               <button onClick={() => go("/stores")} className="flex flex-col items-center gap-0.5 transition-colors" style={{ color: "var(--title)" }}>
                 <LocationOnOutlinedIcon fontSize="medium" />
                 <span className="text-[11px] font-medium">Stores</span>

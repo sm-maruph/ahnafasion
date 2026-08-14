@@ -165,3 +165,28 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #fff;
   border-color: #d1d5db;
 }
+
+/* Shared mobile containment for long names, links, embeds, and data tables. */
+.storefront img,
+.storefront video,
+.storefront iframe {
+  max-width: 100%;
+}
+
+.storefront :is(p, a, td, th, label) {
+  overflow-wrap: anywhere;
+}
+
+.storefront table {
+  max-width: 100%;
+}
+
+@media (max-width: 639px) {
+  .storefront iframe {
+    min-height: 16rem;
+  }
+
+  .storefront :is(button, a, input, select, textarea) {
+    max-width: 100%;
+  }
+}

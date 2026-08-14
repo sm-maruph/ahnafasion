@@ -87,7 +87,7 @@ function SizeChart({ chart }) {
     </button>
     {open && <div className="border-t px-4 py-4" style={{ borderColor: "var(--border)" }}>
       <div className="flex items-center justify-between gap-3 mb-3"><p className="text-xs" style={{ color: "var(--subtitle)" }}>{chart.note}</p><div className="inline-flex rounded-lg bg-gray-100 p-0.5">{["INCH", "CM"].map((u) => <button key={u} onClick={() => setUnit(u)} className={`rounded-md px-3 py-1.5 text-[10px] font-bold ${unit === u ? "bg-white shadow-sm text-gray-900" : "text-gray-500"}`}>{u}</button>)}</div></div>
-      <div className="overflow-x-auto rounded-lg border" style={{ borderColor: "var(--border)" }}><table className="w-full min-w-[520px] text-xs"><thead><tr className="bg-gray-100">{chart.columns.map((column) => <th key={column} className="px-3 py-2.5 text-left font-bold text-gray-800">{column}</th>)}</tr></thead><tbody>{chart.rows.map((row, index) => <tr key={index} className="border-t" style={{ borderColor: "var(--border)" }}>{chart.columns.map((column) => <td key={column} className="px-3 py-2" style={{ color: "var(--details)" }}>{display(row[column], column)}</td>)}</tr>)}</tbody></table></div>
+      <div className="overflow-x-auto overscroll-x-contain rounded-lg border" style={{ borderColor: "var(--border)", WebkitOverflowScrolling: "touch" }}><table className="w-full min-w-[440px] sm:min-w-[520px] text-[11px] sm:text-xs"><thead><tr className="bg-gray-100">{chart.columns.map((column) => <th key={column} className="px-2 sm:px-3 py-2.5 text-left font-bold text-gray-800 whitespace-nowrap">{column}</th>)}</tr></thead><tbody>{chart.rows.map((row, index) => <tr key={index} className="border-t" style={{ borderColor: "var(--border)" }}>{chart.columns.map((column) => <td key={column} className="px-2 sm:px-3 py-2 whitespace-nowrap" style={{ color: "var(--details)" }}>{display(row[column], column)}</td>)}</tr>)}</tbody></table></div>
     </div>}
   </section>;
 }
@@ -224,7 +224,7 @@ export default function ProductDetail() {
   };
 
   return (
-    <div className="w-[94%] max-w-[1300px] mx-auto py-8" style={{ backgroundColor: "var(--primary)" }}>
+    <div className="w-full max-w-[1300px] mx-auto px-3 sm:px-5 lg:px-0 py-5 sm:py-8" style={{ backgroundColor: "var(--primary)" }}>
       <nav className="text-xs mb-5 flex items-center flex-wrap gap-y-1" style={{ color: "var(--title)" }}>
         <Crumb to="/">Home</Crumb>
         <ChevronRightIcon style={{ fontSize: 14, color: "var(--subtitle)" }} className="mx-0.5" />
@@ -236,15 +236,15 @@ export default function ProductDetail() {
           </>
         )}
       </nav>
-      <div className="grid lg:grid-cols-2 gap-10 items-start">
+      <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 items-start">
         {/* Gallery */}
-        <div className="flex gap-3 items-start">
-          <div className="flex flex-col gap-3 order-1">
+        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-start min-w-0">
+          <div className="flex flex-row sm:flex-col gap-2 sm:gap-3 order-2 sm:order-1 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0">
             {(product.images || [product.image]).map((src, i) => (
               <button
                 key={i}
                 onClick={() => setMainImg(src)}
-                className="h-16 w-16 rounded-lg overflow-hidden border-2 transition-colors shrink-0"
+                className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg overflow-hidden border-2 transition-colors shrink-0"
                 style={{ borderColor: mainImg === src ? BRAND : "#e5e7eb" }}
               >
                 <img src={src} alt="" className="h-full w-full object-cover" onError={(e) => imgFallback(e)} />
@@ -253,13 +253,13 @@ export default function ProductDetail() {
           </div>
 
           <div
-            className="flex-1 order-2 rounded-xl bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden group cursor-zoom-in"
+            className="w-full min-w-0 order-1 sm:order-2 rounded-xl bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden group sm:cursor-zoom-in"
             onMouseMove={onZoomMove}
           >
             <img
               src={mainImg}
               alt={product.name}
-              className="w-full h-auto max-h-[760px] object-cover transition-transform duration-300 ease-out group-hover:scale-[2]"
+              className="w-full h-auto max-h-[760px] object-cover transition-transform duration-300 ease-out md:group-hover:scale-[2]"
               onError={(e) => imgFallback(e, product.name)}
             />
           </div>
@@ -344,18 +344,18 @@ export default function ProductDetail() {
 
           {error && <p className="mt-5 -mb-1 text-sm font-medium text-red-500">{error}</p>}
 
-          <div className="mt-4 flex flex-wrap gap-3">
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button onClick={addToCart} disabled={!product.inStock}
-              className="flex-1 min-w-[160px] flex items-center justify-center gap-2 rounded-md border-2 py-3 text-sm font-bold transition-colors disabled:opacity-40"
+              className="w-full flex items-center justify-center gap-2 rounded-md border-2 py-3 text-sm font-bold transition-colors disabled:opacity-40"
               style={{ borderColor: BRAND, color: BRAND }}
               onMouseEnter={(e) => { if (product.inStock) { e.currentTarget.style.backgroundColor = BRAND; e.currentTarget.style.color = "var(--button-text)"; } }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = BRAND; }}>
               <ShoppingBagOutlinedIcon style={{ fontSize: 18 }} /> Add to Cart
             </button>
-            <button onClick={buyNow} disabled={!product.inStock} className="flex-1 min-w-[160px] rounded-md py-3 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-40" style={{ backgroundColor: BRAND }}>
+            <button onClick={buyNow} disabled={!product.inStock} className="w-full rounded-md py-3 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-40" style={{ backgroundColor: BRAND }}>
               Buy Now
             </button>
-            <button onClick={() => toggle(product)} aria-label="Wishlist" className="rounded-md border border-var(--title) px-3 transition-colors hover:border-gray-300" style={{ color: wished ? BRAND : "var(--title)" }}>
+            <button onClick={() => toggle(product)} aria-label="Wishlist" className="sm:col-span-2 rounded-md border border-var(--title) px-3 py-2.5 transition-colors hover:border-gray-300" style={{ color: wished ? BRAND : "var(--title)" }}>
               {wished ? <FavoriteIcon /> : <FavoriteBorderIcon />}
             </button>
           </div>
@@ -378,7 +378,7 @@ export default function ProductDetail() {
 
 
       {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] rounded-full bg-gray-900 text-white text-sm px-5 py-2.5 shadow-lg">{toast}</div>
+        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[200] w-[calc(100%-2rem)] max-w-md rounded-2xl sm:rounded-full bg-gray-900 text-white text-center text-sm px-5 py-2.5 shadow-lg">{toast}</div>
       )}
     </div>
   );
