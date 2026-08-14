@@ -388,10 +388,16 @@ const Navbar = forwardRef(
   }
 );
 
-function ProfileItem({ icon: Icon, label, onClick }) {
+function ProfileItem({ icon: Icon, label, onClick, style }) {
   return (
-    <button onClick={onClick} className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-rose-600 transition-colors">
-      <Icon fontSize="small" className="text-gray-400" />
+    <button
+      onClick={onClick}
+      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors hover:bg-white/5"
+      style={{ color: "var(--subtitle)", ...style }}
+      onMouseEnter={(e) => { e.currentTarget.style.color = "var(--gold-light)"; }}
+      onMouseLeave={(e) => { e.currentTarget.style.color = style?.color || "var(--subtitle)"; }}
+    >
+      <Icon fontSize="small" style={{ color: "currentColor" }} />
       {label}
     </button>
   );
