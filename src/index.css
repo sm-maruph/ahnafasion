@@ -152,6 +152,18 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 0.8;
 }
 
+/* Keep login credentials dark and readable when Chrome autofills them. */
+.storefront .login-input:-webkit-autofill,
+.storefront .login-input:-webkit-autofill:hover,
+.storefront .login-input:-webkit-autofill:focus,
+.storefront .login-input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--details) !important;
+  caret-color: var(--details);
+  -webkit-box-shadow: 0 0 0 1000px #121212 inset !important;
+  box-shadow: 0 0 0 1000px #121212 inset !important;
+  transition: background-color 9999s ease-out 0s;
+}
+
 .storefront :is(.bg-white, .bg-gray-50, .bg-gray-100) input:not([type="checkbox"]):not([type="radio"]),
 .storefront :is(.bg-white, .bg-gray-50, .bg-gray-100) textarea,
 .storefront :is(.bg-white, .bg-gray-50, .bg-gray-100) select {
