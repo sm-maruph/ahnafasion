@@ -1,5 +1,6 @@
 // Cart that uses the API when logged in, localStorage when guest.
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { productColorImage } from "../utils/productColorImage";
 import { useAuth } from "./AuthContext";
 import { getCart, addCartItem, updateCartQty, removeCartItem, clearCart } from "../api";
 
@@ -11,6 +12,7 @@ const readGuest = () => { try { return JSON.parse(localStorage.getItem(KEY) || "
 export function CartProvider({ children }) {
   const { user } = useAuth();
   const [items, setItems] = useState([]);
+  const [confirmation, setConfirmation] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const load = useCallback(async () => {
@@ -33,14 +35,15 @@ export function CartProvider({ children }) {
     } else {
       const next = [...items];
       const i = next.findIndex((x) => x.id === product.id && x.size === size && x.color === color);
-      if (i >= 0) next[i] = { ...next[i], qty: next[i].qty + qty };
+      if (i >= 0) next[i] = { ...next[i], qty: next[i].qty + qty, image: productColorImage(product, color) };
       else next.push({
         cartId: `${product.id}-${size}-${color}-${Date.now()}`,
-        id: product.id, slug: product.slug, name: product.name, image: product.image,
+        id: product.id, slug: product.slug, name: product.name, image: productColorImage(product, color),
         price: product.price, oldPrice: product.oldPrice, size, color, qty,
       });
       saveGuest(next);
     }
+    setConfirmation({ id: Date.now(), name: product.name, qty });
   };
 
   const setQty = async (item, qty) => {
@@ -63,7 +66,7 @@ export function CartProvider({ children }) {
   const subtotal = items.reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0);
 
   return (
-    <CartContext.Provider value={{ items, count, subtotal, loading, add, setQty, remove, clear, reload: load }}>
+    <CartContext.Provider value={{ confirmation, dismissConfirmation: () => setConfirmation(null), items, count, subtotal, loading, add, setQty, remove, clear, reload: load }}>
       {children}
     </CartContext.Provider>
   );

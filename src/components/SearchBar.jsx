@@ -75,14 +75,15 @@ export default function SearchBar({ className = "", placeholder = "Search for pr
     <>
     <style>{`.afl-search-input{color:var(--details)}.afl-search-input::placeholder{color:var(--subtitle);opacity:.7}`}</style>
     <div ref={boxRef} className={`relative ${className}`}>
-      <form onSubmit={onSubmit} className="flex items-center rounded-md px-4 py-2.5 border" style={{ backgroundColor: "var(--foreground)", borderColor: "var(--border)" }}>
+      <form onSubmit={onSubmit} className="af-search-form flex items-center border" style={{ backgroundColor: "var(--foreground)", borderColor: "var(--border)" }}>
         <input
+          aria-label="Search products"
           value={term}
           onChange={(e) => { setTerm(e.target.value); setOpen(true); setActive(-1); }}
           onFocus={() => term.trim() && setOpen(true)}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className="flex-1 min-w-0 bg-transparent text-sm outline-none afl-search-input"
+          className="flex-1 min-w-0 bg-transparent text-base md:text-sm outline-none afl-search-input"
         />
         {term && (
           <button type="button" onClick={clear} aria-label="Clear" className="mr-1" style={{ color: "var(--subtitle)" }}><CloseIcon style={{ fontSize: 16 }} /></button>

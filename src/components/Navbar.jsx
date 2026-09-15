@@ -13,7 +13,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { getCategories, getProducts } from "../api";
 import { useSettings } from "../context/SettingsContext";
 import SearchBar from "./SearchBar";
-import rainzWordmark from "../assets/global/wordmark.jpg";
+import "./Navbar.css";
 
 const BRAND = "var(--brand)";
 const taka = (n) => `\u09F3${Number(n || 0).toLocaleString("en-BD")}`;
@@ -97,6 +97,13 @@ const Navbar = forwardRef(
 
     useEffect(() => () => closeTimer.current && clearTimeout(closeTimer.current), []);
 
+    useEffect(() => {
+      const desktop = window.matchMedia("(min-width: 1280px)");
+      const closeOnDesktop = () => { if (desktop.matches) setMenuOpen(false); };
+      desktop.addEventListener("change", closeOnDesktop);
+      return () => desktop.removeEventListener("change", closeOnDesktop);
+    }, []);
+
     const Badge = ({ count }) =>
       count > 0 ? (
         <span className="absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center" style={{ backgroundColor: BRAND }}>
@@ -107,11 +114,11 @@ const Navbar = forwardRef(
     return (
       <>
         <nav ref={ref} className="w-full fixed top-0 left-0 z-50 shadow-sm border-b border-gray-100" style={{ backgroundColor: "var(--secondary)" }}>
-          <div className="w-[94%] max-w-[1500px] mx-auto relative flex items-center gap-2 sm:gap-3 lg:gap-6 py-2 sm:py-3">
+          <div className="af-navbar-layout">
 
             {/* Logo (bigger) */}
             {/* Logo (bigger) */}
-            <Link to="/" className="no-underline shrink-0 flex items-center gap-2.5">
+            <Link to="/" className="af-navbar-logo no-underline flex items-center gap-2.5">
               {/* 1. Square icon logo (as-is) */}
               {settings.logo ? (
                 <img src={settings.logo} alt={settings.storeName} className="h-9 w-9 sm:h-11 sm:w-11 rounded-md object-cover" />
@@ -121,7 +128,7 @@ const Navbar = forwardRef(
                 </span>
               )}
 
-              <span className="font-heading tracking-wide uppercase whitespace-nowrap leading-none">
+              <span className="af-navbar-wordmark font-heading tracking-wide uppercase leading-none">
                 {(() => {
                   const name = settings.storeName || "AHNAF FASHION";
                   const parts = name.trim().split(/\s+/);
@@ -165,7 +172,7 @@ const Navbar = forwardRef(
             </Link>
 
             {/* Desktop categories with mega-menus */}
-            <ul className="hidden xl:flex items-stretch shrink-0 gap-1">
+            <ul className="af-navbar-categories">
               {categories.map((cat) => {
                 const isActive = currentSlug === catSlug(cat);
                 const hasMenu = (cat.groups && cat.groups.length > 0);
@@ -236,10 +243,10 @@ const Navbar = forwardRef(
             </ul>
 
             {/* Search with live suggestions */}
-            <SearchBar className="hidden md:block flex-1 min-w-[200px]" />
+            <SearchBar className="af-navbar-search" placeholder="Search products..." />
 
             {/* Actions */}
-            <div className="hidden xl:flex items-center gap-4 lg:gap-5 shrink-0">
+            <div className="af-navbar-actions">
               <button onClick={() => go("/stores")} className="flex flex-col items-center gap-0.5 transition-colors" style={{ color: "var(--title)" }}>
                 <LocationOnOutlinedIcon fontSize="medium" />
                 <span className="text-[11px] font-medium">Stores</span>
@@ -312,9 +319,9 @@ const Navbar = forwardRef(
             </div>
 
             {/* Mobile: bag + hamburger */}
-            <div className="flex items-center gap-2 ml-auto xl:hidden">
+            <div className="af-navbar-toggle">
               {/* <button onClick={() => go("/cart")} className="relative p-1.5" style={{ color: "var(--title)" }}><ShoppingBagOutlinedIcon /><Badge count={cartCount} /></button> */}
-              <button className="text-white p-1.5 rounded-md" style={{ backgroundColor: BRAND }} onClick={() => { setMenuOpen(!menuOpen); setOpenDropdown(null); }}>
+              <button aria-label="Open navigation menu" aria-expanded={menuOpen} className="text-white p-2.5 rounded-md" style={{ backgroundColor: BRAND }} onClick={() => { setMenuOpen(!menuOpen); setOpenDropdown(null); }}>
                 {menuOpen ? <CloseIcon /> : <MenuIcon />}
               </button>
             </div>
@@ -327,8 +334,8 @@ const Navbar = forwardRef(
             {/* dark overlay (tap to close) */}
             <div className="fixed inset-0 bg-black/40 xl:hidden z-[99]" onClick={() => setMenuOpen(false)} />
             {/* drawer panel */}
-            <div className="fixed top-0 right-0 h-full w-[75%] max-w-[360px] flex flex-col px-4 pt-16 pb-10 xl:hidden z-[100] overflow-y-auto shadow-2xl animate-[slideIn_.25s_ease-out]" style={{ backgroundColor: "var(--secondary)" }}>
-              <button className="absolute top-4 right-4 text-gray-700" onClick={() => setMenuOpen(false)}><CloseIcon /></button>
+            <div className="fixed top-0 right-0 h-full w-[calc(100%-1rem)] max-w-[360px] flex flex-col px-4 pt-16 pb-10 xl:hidden z-[100] overflow-y-auto shadow-2xl animate-[slideIn_.25s_ease-out]" style={{ backgroundColor: "var(--secondary)" }}>
+              <button aria-label="Close navigation menu" className="absolute top-4 right-4 text-gray-700" onClick={() => setMenuOpen(false)}><CloseIcon /></button>
 
               <div className="mb-4">
                 <SearchBar onNavigate={() => setMenuOpen(false)} />

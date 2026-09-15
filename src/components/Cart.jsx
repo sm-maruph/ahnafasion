@@ -7,6 +7,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import CartRecommendations from "./CartRecommendations";
 import { useCart } from "../context/CartContext";
 
 const BRAND = "var(--brand)";
@@ -153,7 +154,7 @@ export default function Cart() {
           </div>
         </aside>
       </div>
-
+      <CartRecommendations items={items} />
     </div>
   );
 }

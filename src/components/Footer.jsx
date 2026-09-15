@@ -1,61 +1,8 @@
-// src/components/Footer.jsx — contact + socials driven by store settings
-import React, { useState } from "react";
-import { Mail, Phone, MapPin, Clock, ArrowRight, Sparkles } from "lucide-react";
+import React from "react";
+import { Link } from "react-router-dom";
+import { Mail, Phone, MapPin, Clock, ArrowUpRight } from "lucide-react";
 import { useSettings } from "../context/SettingsContext";
-
-const BRAND = "var(--brand)";
-
-const COLORS = {
-  bg: "#0f0f0f",
-  surface: "#1a1a1a",
-  accent: BRAND,
-  text: "#e0e0e0",
-  textMuted: "#a0a0a0",
-  textSubtle: "#888888",
-  border: "rgba(255,255,255,0.08)",
-  borderLight: "rgba(255,255,255,0.06)",
-  cartisy: "#ff4d4d",
-  white: "#ffffff",
-};
-
-const NAV_LINKS = [
-  { label: "About Ahnaf Fashion", href: "#" },
-  { label: "Terms & Conditions", href: "#" },
-  { label: "Privacy Policy", href: "#" },
-  { label: "Cancellation & Return Policy", href: "#" },
-  { label: "FAQs", href: "#" },
-  { label: "Contact Us", href: "#" },
-];
-
-/* ---- Social icons (SVG paths unchanged) ---- */
-const SocialIcon = ({ path, href = "#", viewBox = "0 0 24 24", label }) => (
-  <a
-    href={href}
-    target={href !== "#" ? "_blank" : undefined}
-    rel={href !== "#" ? "noopener noreferrer" : undefined}
-    aria-label={label}
-    className="group flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
-    style={{
-      color: COLORS.textMuted,
-      borderColor: COLORS.border,
-      backgroundColor: "transparent",
-    }}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.color = COLORS.white;
-      e.currentTarget.style.borderColor = COLORS.accent;
-      e.currentTarget.style.backgroundColor = `${COLORS.accent}15`;
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.color = COLORS.textMuted;
-      e.currentTarget.style.borderColor = COLORS.border;
-      e.currentTarget.style.backgroundColor = "transparent";
-    }}
-  >
-    <svg viewBox={viewBox} className="h-4.5 w-4.5 transition-transform duration-300 group-hover:scale-110" fill="currentColor">
-      {path}
-    </svg>
-  </a>
-);
+import "./Footer.css";
 
 const ICONS = {
   instagram: (
@@ -86,337 +33,91 @@ const SOCIAL_ORDER = [
   { key: "youtube", label: "YouTube" },
 ];
 
-const StoreButton = ({ top, bottom, icon }) => (
-  <a
-    href="#"
-    className="flex items-center gap-2.5 rounded-xl border px-4 py-2.5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
-    style={{
-      backgroundColor: COLORS.surface,
-      borderColor: COLORS.border,
-    }}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.borderColor = COLORS.accent;
-      e.currentTarget.style.boxShadow = `0 4px 16px ${COLORS.accent}20`;
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.borderColor = COLORS.border;
-      e.currentTarget.style.boxShadow = "none";
-    }}
-  >
-    <span className="text-white">{icon}</span>
-    <span className="flex flex-col leading-tight">
-      <span className="text-[10px] font-medium uppercase tracking-wider" style={{ color: COLORS.textSubtle }}>
-        {top}
-      </span>
-      <span className="text-sm font-semibold text-white">{bottom}</span>
-    </span>
-  </a>
-);
+const SHOP_LINKS = [
+  ["New arrivals", "/new-arrivals"],
+  ["Men", "/men"],
+  ["Women", "/women"],
+  ["Teens", "/teens"],
+  ["Kids", "/kids"],
+];
+const HELP_LINKS = [
+  ["About us", "/about-us"],
+  ["Contact us", "/contact-us"],
+  ["Find a store", "/stores"],
+  ["Track your order", "/track-order"],
+  ["My orders", "/account/orders"],
+];
 
-const Footer = () => {
+function FooterLinks({ title, links }) {
+  return (
+    <nav className="af-footer-links" aria-label={`Footer ${title}`}>
+      <h3>{title}</h3>
+      <ul>{links.map(([label, to]) => <li key={to}><Link to={to}>{label}</Link></li>)}</ul>
+    </nav>
+  );
+}
+
+export default function Footer() {
   const { settings } = useSettings();
-  const [email, setEmail] = useState("");
-  const [subscribeStatus, setSubscribeStatus] = useState(null); // 'success' | null
-
-  const handleSubscribe = () => {
-    if (!email) return;
-    console.log("Subscribe:", email);
-    setSubscribeStatus("success");
-    setEmail("");
-    setTimeout(() => setSubscribeStatus(null), 3000);
-  };
-
   const storeName = settings.storeName || "Ahnaf Fashion";
   const social = settings.social || {};
-
-  const socialHref = (key, val) => {
-    if (!val) return null;
-    if (key === "whatsapp") {
-      const digits = String(val).replace(/\D/g, "");
-      return digits ? `https://wa.me/${digits}` : null;
-    }
-    return val;
-  };
-
-  const activeSocials = SOCIAL_ORDER.map((s) => ({
-    ...s,
-    href: socialHref(s.key, social[s.key]),
-  })).filter((s) => s.href);
-
-  const year = new Date().getFullYear();
+  const socials = SOCIAL_ORDER.flatMap(({ key, label }) => {
+    const value = String(social[key] || "").trim();
+    if (!value) return [];
+    const digits = value.replace(/\D/g, "");
+    const href = key === "whatsapp" ? (digits ? `https://wa.me/${digits}` : "") : value;
+    return /^https?:\/\//i.test(href) ? [{ key, label, href }] : [];
+  });
+  const address = [settings.address, settings.city].filter(Boolean).join(", ");
 
   return (
-    <footer style={{ backgroundColor: COLORS.bg, color: COLORS.text }}>
-      {/* ---- Top accent line ---- */}
-      <div style={{ height: "3px", background: `linear-gradient(90deg, ${COLORS.accent} 0%, ${COLORS.accent}88 50%, transparent 100%)` }} />
-
-      {/* ---- Main footer content ---- */}
-      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 md:px-8 lg:px-10 lg:py-16">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
-          {/* ---- Column 1: Brand + Nav ---- */}
-          <div className="lg:col-span-3">
-            {/* Brand */}
-            <div className="mb-7 flex items-center gap-3">
-              {settings.logo ? (
-                <img
-                  src={settings.logo}
-                  alt={storeName}
-                  className="h-10 w-auto object-contain sm:h-11"
-                />
-              ) : (
-                <div
-                  className="flex h-10 w-10 items-center justify-center rounded-xl text-lg font-black text-white shadow-md sm:h-11 sm:w-11 sm:text-xl"
-                  style={{ backgroundColor: COLORS.accent }}
-                >
-                  {storeName[0]}
-                </div>
-              )}
-              <span className="text-lg font-bold tracking-tight text-white sm:text-xl">
-                {storeName}
-              </span>
-            </div>
-
-            {/* Short tagline */}
-            <p className="mb-7 text-sm leading-relaxed" style={{ color: COLORS.textMuted }}>
-              Your destination for premium lifestyle products, curated with care and delivered with love.
-            </p>
-
-            {/* Navigation */}
-            <nav>
-              <h4 className="mb-4 text-xs font-semibold uppercase tracking-widest" style={{ color: COLORS.textSubtle }}>
-                Quick Links
-              </h4>
-              <ul className="space-y-2.5">
-                {NAV_LINKS.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="group inline-flex items-center gap-1.5 text-sm transition-colors duration-200 hover:text-white"
-                      style={{ color: COLORS.textMuted }}
-                    >
-                      <span className="block h-1 w-1 rounded-full opacity-0 transition-all duration-200 group-hover:opacity-100" style={{ backgroundColor: COLORS.accent }} />
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+    <footer className="af-footer">
+      <div className="af-footer-inner">
+        <div className="af-footer-intro">
+          <div>
+            <h2>Everyday style. <span>Beautifully chosen.</span></h2>
           </div>
-
-          {/* ---- Column 2: Contact Info ---- */}
-          <div className="lg:col-span-4">
-            <h4 className="mb-5 text-xs font-semibold uppercase tracking-widest" style={{ color: COLORS.textSubtle }}>
-              Get in Touch
-            </h4>
-
-            <div className="space-y-5">
-              {/* Address */}
-              <div className="flex gap-3">
-                <div
-                  className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: `${COLORS.accent}18` }}
-                >
-                  <MapPin className="h-4 w-4" style={{ color: COLORS.accent }} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-white">Our Address</p>
-                  <p className="mt-0.5 text-sm leading-relaxed" style={{ color: COLORS.textMuted }}>
-                    {settings.address || "Setu Homes, 55-Box Nagar, Zoo Road, Mirpur-1, Dhaka-1216"}
-                    {settings.city ? `, ${settings.city}` : ""}
-                  </p>
-                </div>
-              </div>
-
-              {/* Hours */}
-              {settings.hours && (
-                <div className="flex gap-3">
-                  <div
-                    className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                    style={{ backgroundColor: `${COLORS.accent}18` }}
-                  >
-                    <Clock className="h-4 w-4" style={{ color: COLORS.accent }} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-white">Business Hours</p>
-                    <p className="mt-0.5 text-sm" style={{ color: COLORS.textMuted }}>
-                      {settings.hours}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Email */}
-              <div className="flex gap-3">
-                <div
-                  className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: `${COLORS.accent}18` }}
-                >
-                  <Mail className="h-4 w-4" style={{ color: COLORS.accent }} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-white">Email Us</p>
-                  <a
-                    href={`mailto:${settings.supportEmail || "support@ahnaffashion.com"}`}
-                    className="mt-0.5 block text-sm transition-colors hover:text-white"
-                    style={{ color: COLORS.textMuted }}
-                  >
-                    {settings.supportEmail || "support@ahnaffashion.com"}
-                  </a>
-                </div>
-              </div>
-
-              {/* Phone */}
-              <div className="flex gap-3">
-                <div
-                  className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: `${COLORS.accent}18` }}
-                >
-                  <Phone className="h-4 w-4" style={{ color: COLORS.accent }} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-white">Call Us</p>
-                  <a
-                    href={`tel:${(settings.supportPhone || "+880 9677 666888").replace(/\s/g, "")}`}
-                    className="mt-0.5 block text-sm transition-colors hover:text-white"
-                    style={{ color: COLORS.textMuted }}
-                  >
-                    {settings.supportPhone || "+880 9677 666888"}
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ---- Column 3: Newsletter + Follow + Apps ---- */}
-          <div className="lg:col-span-5">
-            {/* Newsletter */}
-            <div className="mb-8">
-              <div className="mb-3 flex items-center gap-2">
-                <Sparkles className="h-4 w-4" style={{ color: COLORS.accent }} />
-                <h4 className="text-xs font-semibold uppercase tracking-widest" style={{ color: COLORS.textSubtle }}>
-                  Newsletter
-                </h4>
-              </div>
-              <p className="mb-4 text-sm leading-relaxed" style={{ color: COLORS.textMuted }}>
-                Subscribe to get special offers, free giveaways, and exclusive deals.
-              </p>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setSubscribeStatus(null);
-                    }}
-                    onKeyDown={(e) => e.key === "Enter" && handleSubscribe()}
-                    placeholder="your@email.com"
-                    className="w-full rounded-xl border px-4 py-3 text-sm text-white placeholder-gray-500 outline-none transition-all duration-300 focus:border-transparent focus:ring-2"
-                    style={{
-                      backgroundColor: COLORS.surface,
-                      borderColor: subscribeStatus === "success" ? "#22c55e" : COLORS.border,
-                      "--tw-ring-color": COLORS.accent,
-                    }}
-                  />
-                </div>
-                <button
-                  onClick={handleSubscribe}
-                  className="group flex shrink-0 items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg active:scale-95"
-                  style={{ backgroundColor: COLORS.accent }}
-                >
-                  {subscribeStatus === "success" ? (
-                    <>
-                      <span className="text-lg leading-none">✓</span>
-                      Subscribed
-                    </>
-                  ) : (
-                    <>
-                      Subscribe
-                      <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
-                    </>
-                  )}
-                </button>
-              </div>
-              {subscribeStatus === "success" && (
-                <p className="mt-2 text-xs text-green-400">🎉 You're in! Check your inbox for a welcome gift.</p>
-              )}
-            </div>
-
-            {/* Follow Us */}
-            <div className="mb-7">
-              <h4 className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: COLORS.textSubtle }}>
-                Follow Us
-              </h4>
-              {activeSocials.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {activeSocials.map((s) => (
-                    <SocialIcon key={s.key} path={ICONS[s.key]} href={s.href} label={s.label} />
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs" style={{ color: COLORS.textSubtle }}>
-                  Social links can be added in admin settings.
-                </p>
-              )}
-            </div>
-
-            {/* App Store Buttons */}
-            <div>
-              <h4 className="mb-3 text-xs font-semibold uppercase tracking-widest" style={{ color: COLORS.textSubtle }}>
-                Download Our App
-              </h4>
-              <div className="flex flex-wrap gap-3">
-                <StoreButton
-                  top="Get it on"
-                  bottom="Google Play"
-                  icon={
-                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-                      <path d="M3.6 2.3c-.2.2-.3.5-.3.9v17.6c0 .4.1.7.3.9l.1.1L13.5 12 3.7 2.2l-.1.1z" />
-                      <path d="M17 15.3l-3.5-3.3 3.5-3.3 4 2.3c1.1.6 1.1 1.7 0 2.3l-4 2z" />
-                      <path d="M3.7 21.7l9.8-9.7 3.5 3.3-11 6.3c-.9.5-1.7.4-2.3.1z" />
-                      <path d="M3.7 2.3l13.3 7.6-3.5 3.3L3.7 2.3z" opacity=".85" />
-                    </svg>
-                  }
-                />
-                <StoreButton
-                  top="Download on the"
-                  bottom="App Store"
-                  icon={
-                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-                      <path d="M16.4 12.7c0-2.1 1.7-3.1 1.8-3.2-1-1.4-2.5-1.6-3-1.6-1.3-.1-2.5.8-3.1.8s-1.6-.7-2.7-.7c-1.4 0-2.7.8-3.4 2-1.5 2.5-.4 6.3 1 8.4.7 1 1.5 2.1 2.6 2.1s1.5-.7 2.8-.7 1.6.7 2.7.7 1.8-1 2.5-2c.8-1.1 1.1-2.2 1.1-2.3-.1 0-2.3-.9-2.3-3.5zM14.3 6.3c.6-.7 1-1.7.9-2.7-.9 0-1.9.6-2.5 1.3-.6.6-1 1.6-.9 2.6 1 .1 1.9-.5 2.5-1.2z" />
-                    </svg>
-                  }
-                />
-              </div>
-            </div>
-          </div>
+          <Link className="af-footer-cta" to="/new-arrivals">Explore new arrivals <ArrowUpRight size={18} aria-hidden="true" /></Link>
         </div>
-      </div>
 
-      {/* ---- Bottom bar ---- */}
-      <div style={{ borderTop: `1px solid ${COLORS.border}` }}>
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 text-xs sm:flex-row sm:px-6 md:px-8 lg:px-10">
-          <p style={{ color: COLORS.textMuted }}>
-            Copyright &copy; {year}{" "}
-            <span className="font-semibold text-white">{storeName}</span>
-            . All rights reserved.
-          </p>
-          <p style={{ color: COLORS.textMuted }}>
-            Developed by{" "}
-            <a
-              href="https://theatives.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold transition-colors hover:underline"
-              style={{ color: COLORS.cartisy }}
-            >
-              Theatives
-            </a>
-          </p>
+        <div className="af-footer-grid">
+          <div className="af-footer-brand">
+            <Link to="/" className="af-footer-logo">
+              {settings.logo ? <img src={settings.logo} alt="" loading="lazy" /> : <span className="af-footer-monogram">{storeName[0]}</span>}
+              <span>{storeName}</span>
+            </Link>
+            <p>{settings.tagline || "Considered styles for every day and every occasion. Find your next favourite at Ahnaf Fashion."}</p>
+            {socials.length > 0 && (
+              <div className="af-footer-socials" aria-label="Follow us">
+                {socials.map(({ key, label, href }) => (
+                  <a key={key} href={href} target="_blank" rel="noopener noreferrer" aria-label={`Follow us on ${label}`}>
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">{ICONS[key]}</svg>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <FooterLinks title="Explore" links={SHOP_LINKS} />
+          <FooterLinks title="We're here to help" links={HELP_LINKS} />
+
+          <section className="af-footer-contact" aria-labelledby="footer-contact-title">
+            <h3 id="footer-contact-title">Get in touch</h3>
+            <ul>
+              {address && <li><MapPin aria-hidden="true" /><div><span>Visit us</span><p>{address}</p></div></li>}
+              {settings.hours && <li><Clock aria-hidden="true" /><div><span>Opening hours</span><p>{settings.hours}</p></div></li>}
+              {settings.supportEmail && <li><Mail aria-hidden="true" /><div><span>Email</span><a href={`mailto:${settings.supportEmail}`}>{settings.supportEmail}</a></div></li>}
+              {settings.supportPhone && <li><Phone aria-hidden="true" /><div><span>Call us</span><a href={`tel:${settings.supportPhone.replace(/\s/g, "")}`}>{settings.supportPhone}</a></div></li>}
+              {!address && !settings.hours && !settings.supportEmail && !settings.supportPhone && <li><Mail aria-hidden="true" /><Link to="/contact-us">Talk to our team <ArrowUpRight size={14} aria-hidden="true" /></Link></li>}
+            </ul>
+          </section>
+        </div>
+
+        <div className="af-footer-bottom">
+          <p>&copy; {new Date().getFullYear()} {storeName}. All rights reserved.</p>
+          <p>Developed by <a href="https://theatives.com/" target="_blank" rel="noopener noreferrer">Theatives <ArrowUpRight size={12} aria-hidden="true" /></a></p>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

@@ -1,0 +1,25 @@
+.af-floating-cart { position: fixed; z-index: 80; display: grid; place-items: center; width: 56px; height: 56px; padding: 0; border: 1px solid #ebd58a; border-radius: 50%; background: var(--brand, #d4af37); color: #111; box-shadow: 0 6px 24px #0005; cursor: grab; touch-action: none; user-select: none; }
+.af-floating-cart:active { cursor: grabbing; }
+.af-floating-cart:focus-visible { outline: 3px solid var(--details, #fff); outline-offset: 4px; }
+.af-floating-cart-count { position: absolute; right: -3px; top: -4px; min-width: 21px; height: 21px; padding: 0 4px; display: grid; place-items: center; border-radius: 20px; background: #111; color: #fff; border: 1px solid var(--brand); font: 600 10px var(--ff-body, sans-serif); }
+.af-cart-confirmation { width: min(380px, calc(100% - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 1px solid var(--border, #d4af3740); border-radius: 16px; background: var(--secondary, #171717); color: var(--details, #f8f6f2); box-shadow: 0 28px 90px #0009; overflow: auto; animation: af-cart-appear .35s ease-out; }
+.af-cart-confirmation::backdrop { background: #0009; backdrop-filter: blur(6px); }
+.af-cart-confirmation-content { position: relative; padding: 38px 30px 28px; text-align: left; font-family: var(--ff-body, sans-serif); background: radial-gradient(ellipse at top left, #d4af3718, transparent 65%); }
+.af-cart-confirmation-close { position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 50%; color: var(--subtitle); background: transparent; }
+.af-cart-confirmation-close:focus-visible { outline: 2px solid var(--brand); }
+.af-cart-success-icon { position: relative; display: grid; place-items: center; width: 64px; height: 64px; margin: 0 0 26px; border: 1px solid var(--brand); border-radius: 16px; color: var(--brand); background: var(--primary); animation: af-cart-pop .55s ease-out; }
+.af-cart-success-icon::before { content: ""; position: absolute; inset: -7px; border: 1px solid var(--brand); border-radius: 22px; animation: af-cart-ring 1.4s ease-out forwards; pointer-events: none; }
+.af-cart-success-check { position: absolute; right: -7px; bottom: -6px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 14px; font-weight: 700; background: var(--brand); color: var(--button-text, #111); border: 3px solid var(--secondary); }
+.af-cart-confirmation h2 { margin: 0 0 14px; font: 600 24px var(--ff-heading, serif); letter-spacing: -.02em; color: var(--details, #f8f6f2); }
+.af-cart-confirmation p { margin: 0; color: var(--subtitle, #bdbdbd); font-size: 12px; line-height: 1.7; }
+.af-cart-confirmation .af-cart-confirmation-product { margin-bottom: 6px; color: var(--details, #f8f6f2); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.af-cart-progress { display: block; width: 100%; height: 2px; margin: 26px 0 0; border-radius: 4px; background: var(--border); overflow: hidden; }
+.af-cart-progress > span { display: block; height: 100%; background: var(--brand); transform-origin: left; animation: af-cart-progress 2.4s linear forwards; }
+@keyframes af-cart-appear { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes af-cart-pop { 0% { transform: translateY(8px) rotate(-10deg); opacity: 0; } 65% { transform: translateY(-3px) rotate(3deg); } 100% { transform: translateY(0) rotate(0); opacity: 1; } }
+@keyframes af-cart-ring { from { transform: scale(.85); opacity: .8; } to { transform: scale(1.3); opacity: 0; } }
+@keyframes af-cart-progress { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .af-cart-confirmation, .af-cart-success-icon, .af-cart-success-icon::before, .af-cart-progress > span { animation: none; }
+  .af-cart-success-icon::before { display: none; }
+}

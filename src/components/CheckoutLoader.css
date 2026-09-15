@@ -1,0 +1,10 @@
+.af-checkout-loader { width: min(360px, calc(100% - 32px)); margin: auto; padding: 30px 24px; border: 1px solid var(--border); border-radius: 18px; color: var(--details); background: var(--secondary); box-shadow: 0 24px 80px #0009; text-align: center; }
+.af-checkout-loader::backdrop { background: #0009; backdrop-filter: blur(6px); }
+.af-checkout-road { position: relative; height: 120px; width: 150px; margin: 0 auto 24px; overflow: hidden; border-inline: 1px solid var(--border); background: var(--primary); transform: perspective(250px) rotateX(12deg); border-radius: 12px; }
+.af-checkout-road-lines { position: absolute; inset: -100% 50% 0; width: 3px; background: repeating-linear-gradient(to bottom, var(--brand) 0 18px, transparent 18px 38px); animation: af-road-drive .5s linear infinite; opacity: .4; }
+.af-checkout-car { position: absolute; left: calc(50% - 33px); top: 24px; color: var(--brand); fill: var(--secondary); filter: drop-shadow(0 5px 8px #0008); animation: af-car-drive .35s ease-in-out infinite alternate; }
+.af-checkout-loader h2 { font: 600 20px var(--ff-heading, serif); color: var(--details); margin: 0 0 12px; }
+.af-checkout-loader p { font: 12px var(--ff-body, sans-serif); color: var(--subtitle); margin: 0; }
+@keyframes af-road-drive { to { transform: translateY(38px); } }
+@keyframes af-car-drive { from { transform: translateY(0) rotate(-1deg); } to { transform: translateY(3px) rotate(1deg); } }
+@media (prefers-reduced-motion: reduce) { .af-checkout-car, .af-checkout-road-lines { animation: none; } }

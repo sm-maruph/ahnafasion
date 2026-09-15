@@ -19,6 +19,7 @@ import Register from "./components/Register";
 import Wishlist from "./components/Wishlist";
 import MyOrders from "./components/MyOrders";
 import Cart from "./components/Cart";
+import CartFeedback from "./components/CartFeedback";
 import TrackOrder from "./components/TrackOrder";
 import Stores from "./components/Stores";
 import SalePage from "./components/SalePage";
@@ -180,6 +181,7 @@ function App() {
       {!isAdminPage && !isLoginPage && (
         <>
           <Footer />
+          {!isCheckoutPage && <CartFeedback />}
           {!isCheckoutPage && <MobileBottomNav />}
         </>
       )}

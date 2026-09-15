@@ -11,23 +11,18 @@ import {
   getProducts, getProductBySlug, createProduct, updateProduct, deleteProduct, getCategoriesRaw, getSizeCharts,
 } from "../../api";
 
+import ColorVariantsEditor from "./ColorVariantsEditor";
+import { toColorVariants, normalizeHex, colorError } from "./productColors";
+
 const BRAND = "#E11D48";
 const taka = (n) => `\u09F3${Number(n || 0).toLocaleString("en-BD")}`;
 const pctOff = (p) => (p.oldPrice && p.oldPrice > p.price ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0);
 
-const COLOR_HEX = {
-  black: "#111827", white: "#f9fafb", red: "#ef4444", blue: "#3b82f6", navy: "#1e3a8a",
-  green: "#22c55e", grey: "#9ca3af", gray: "#9ca3af", pink: "#ec4899", yellow: "#eab308",
-  purple: "#8b5cf6", brown: "#92400e", beige: "#e7d8b1", olive: "#6b7280", maroon: "#7f1d1d",
-};
-const toColorObjs = (csv) =>
-  String(csv).split(",").map((s) => s.trim()).filter(Boolean)
-    .map((name) => ({ name, hex: COLOR_HEX[name.toLowerCase()] || "#9ca3af" }));
 const csvToArr = (csv) => String(csv).split(",").map((s) => s.trim()).filter(Boolean);
 
 const EMPTY_FORM = {
   id: null, slug: "", name: "", brand: "", category_id: "", subcategory_id: "",
-  price: "", oldPrice: "", stock: "", sizes: "", sizeVariants: [], sizeChartId: "", colors: "", description: "", tags: "",
+  price: "", oldPrice: "", stock: "", sizes: "", sizeVariants: [], sizeChartId: "", colors: [], description: "", tags: "",
 };
 
 function toForm(p) {
@@ -45,7 +40,7 @@ function toForm(p) {
     sizes: (p.sizes || []).join(", "),
     sizeVariants,
     sizeChartId: p.sizeChartId || "",
-    colors: (p.colors || []).map((c) => (typeof c === "string" ? c : c.name)).join(", "),
+    colors: toColorVariants(p.colors),
     description: p.description || "", tags: (p.tags || []).join(", "),
   };
 }
@@ -159,6 +154,8 @@ export default function AdminProducts() {
     if (!form.name.trim()) er.name = "Name is required";
     if (form.price === "" || Number(form.price) < 0) er.price = "Valid price required";
     if (form.oldPrice !== "" && Number(form.oldPrice) <= Number(form.price)) er.oldPrice = "Old price must exceed price";
+    const colorsError = colorError(form.colors);
+    if (colorsError) er.colors = colorsError;
     setErrors(er);
     return Object.keys(er).length === 0;
   };
@@ -178,7 +175,7 @@ export default function AdminProducts() {
       sizes: form.sizeVariants.map((v) => v.name),
       size_variants: form.sizeVariants,
       size_chart_id: form.sizeChartId,
-      colors: toColorObjs(form.colors),
+      colors: form.colors.map((c) => ({ name: c.name.trim(), hex: normalizeHex(c.hex) })),
       tags: csvToArr(form.tags),
     };
     try {
@@ -319,10 +316,11 @@ export default function AdminProducts() {
 
               {/* Images */}
               <div>
-                <span className="text-xs font-medium text-gray-500">Product images <span className="text-gray-400">(first is the cover)</span></span>
+                <span className="text-xs font-medium text-gray-500">Product images <span className="text-gray-400">(first is the cover; colors match image order)</span></span>
                 <div className="mt-2 flex flex-wrap gap-3">
                   {gallery.map((g, idx) => (
                     <div key={`${g.kind}-${idx}`} className="relative h-24 w-20 rounded-lg overflow-hidden border border-gray-200 group">
+                      <span className="absolute top-0 left-0 z-10 text-[10px] bg-white text-gray-900 px-1 rounded-br">{idx + 1}: {form.colors[idx]?.name || "Gallery"}</span>
                       <img src={g.src} alt={`img-${idx}`} className="h-full w-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/80x96/f3f4f6/9ca3af?text=R"; }} />
                       {idx === 0 && (
                         <span className="absolute bottom-0 inset-x-0 text-[10px] font-bold text-white text-center py-0.5 flex items-center justify-center gap-0.5" style={{ backgroundColor: BRAND }}>
@@ -379,7 +377,7 @@ export default function AdminProducts() {
                   </div>
                   <p className="mt-1 text-[11px] text-gray-400">Total stock: {form.sizeVariants.reduce((sum, v) => sum + Number(v.stock || 0), 0)}</p>
                 </div>}
-                <Field label="Colors (comma separated)"><input value={form.colors} onChange={(e) => setField("colors", e.target.value)} className="inp" placeholder="Black, White, Navy" /></Field>
+                <div className="sm:col-span-2"><ColorVariantsEditor value={form.colors} onChange={(colors) => setField("colors", colors)} error={errors.colors} /></div>
                 <Field label="Tags (comma separated)"><input value={form.tags} onChange={(e) => setField("tags", e.target.value)} className="inp" placeholder="new, summer" /></Field>
               </div>
 

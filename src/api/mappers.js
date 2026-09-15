@@ -1,3 +1,4 @@
+import { productColorImage } from "../utils/productColorImage";
 // Reshape API rows (snake_case) into the shapes your components use.
 const num = (n) => Number(n || 0);
 
@@ -36,7 +37,7 @@ export function mapOrder(o) {
 export function mapCartItem(row) {
   const p = row.product || {};
   return {
-    cartId: row.id, id: p.id, slug: p.slug, name: p.name, image: p.image,
+    cartId: row.id, id: p.id, slug: p.slug, name: p.name, image: productColorImage(p, row.color),
     price: num(p.price), oldPrice: p.old_price != null ? num(p.old_price) : null,
     stock: p.stock, size: row.size, color: row.color, qty: row.qty,
   };

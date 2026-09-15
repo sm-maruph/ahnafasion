@@ -1,0 +1,16 @@
+.af-color-editor { min-width: 0; padding: 14px; border: 1px solid #e5e7eb; border-radius: 10px; }
+.af-color-editor legend { float: none; width: auto; padding: 0 5px; margin: 0; font: 600 13px var(--ff-body, sans-serif); color: #374151; }
+.af-color-editor > p { color: #6b7280; font-size: 12px; margin: 0 0 12px; }
+.af-color-suggestions { display: flex; flex-wrap: wrap; gap: 6px; max-height: 150px; overflow-y: auto; padding: 2px; }
+.af-color-suggestions button { display: inline-flex; align-items: center; gap: 5px; padding: 6px 8px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f9fafb; color: #374151; font-size: 11px; text-transform: capitalize; }
+.af-color-suggestions code { font-size: 10px; color: #6b7280; }
+.af-color-suggestions span { height: 14px; width: 14px; flex-shrink: 0; border: 1px solid #0002; border-radius: 50%; }
+.af-color-rows { display: grid; gap: 10px; margin-top: 14px; }
+.af-color-row { display: grid; grid-template-columns: minmax(0, 1fr) 48px minmax(95px, .65fr) auto; align-items: end; gap: 8px; }
+.af-color-row label { min-width: 0; color: #6b7280; font-size: 11px; }
+.af-color-row input { display: block; margin-top: 4px; height: 38px; }
+.af-color-row input[type=color] { width: 100%; padding: 3px; background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; cursor: pointer; }
+.af-color-remove { height: 38px; color: #b91c1c; font-size: 11px; }
+.af-color-add { margin-top: 12px; padding: 8px 12px; border-radius: 6px; background: #f3f4f6; color: #374151; font-size: 12px; font-weight: 600; }
+.af-color-editor .af-color-error { color: #b91c1c; margin: 8px 0 0; }
+@media(max-width: 480px) { .af-color-row { grid-template-columns: minmax(0, 1fr) 48px minmax(90px, 1fr); } .af-color-remove { grid-column: 1 / -1; justify-self: end; } }

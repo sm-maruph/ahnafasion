@@ -1,0 +1,59 @@
+.af-footer {
+  background: #10100f;
+  color: #b8b6af;
+  border-top: 1px solid rgba(212, 175, 55, .25);
+  font-family: var(--ff-body);
+  font-size: 13px;
+}
+.af-footer * { box-sizing: border-box; }
+.af-footer-inner { max-width: 1380px; margin: 0 auto; padding: 0 40px; }
+.af-footer a { color: inherit; text-decoration: none; transition: color .18s, background-color .18s, border-color .18s; }
+.af-footer a:hover { color: var(--brand); }
+.af-footer a:focus-visible { outline: 2px solid var(--brand); outline-offset: 5px; border-radius: 3px; }
+.af-footer p, .af-footer h2, .af-footer h3, .af-footer ul { margin: 0; padding: 0; }
+.af-footer ul { list-style: none; }
+.af-footer-intro { display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 38px 0; border-bottom: 1px solid #ffffff12; }
+.af-footer h2 { color: #f5f1e8; font-size: clamp(22px, 2.1vw, 30px); line-height: 1.4; font-weight: 500; letter-spacing: -.025em; }
+.af-footer h2 span { color: #aaa69a; }
+.af-footer .af-footer-cta { display: inline-flex; align-items: center; justify-content: center; gap: 20px; flex-shrink: 0; min-height: 46px; padding: 12px 20px; border: 1px solid #d4af3755; border-radius: 999px; color: #eee0b2; font-size: 12px; font-weight: 500; }
+.af-footer .af-footer-cta:hover { background: var(--brand); border-color: var(--brand); color: #10100f; }
+.af-footer-grid { display: grid; grid-template-columns: 1.3fr .7fr .9fr 1.25fr; gap: 44px; padding: 42px 0; }
+.af-footer-grid > * { min-width: 0; }
+.af-footer .af-footer-logo { display: inline-flex; align-items: center; gap: 12px; color: #f5f1e8; font-size: 20px; font-weight: 600; letter-spacing: -.04em; line-height: 1.3; }
+.af-footer-logo img, .af-footer-monogram { width: 46px; height: 46px; flex-shrink: 0; border: 1px solid #d4af3730; border-radius: 8px; object-fit: contain; }
+.af-footer-monogram { display: grid; place-items: center; color: var(--brand); font-family: var(--ff-heading); }
+.af-footer-brand > p { max-width: 285px; margin-top: 18px; line-height: 1.85; }
+.af-footer-socials { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.af-footer-socials a { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid #ffffff18; border-radius: 50%; }
+.af-footer-socials a:hover { border-color: var(--brand); background: #d4af3710; }
+.af-footer-socials svg { width: 17px; height: 17px; }
+.af-footer h3 { font-family: var(--ff-body); font-size: 11px; line-height: 1.5; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: #e7dfcc; margin-bottom: 18px; }
+.af-footer-links li + li { margin-top: 3px; }
+.af-footer-links a { display: inline-flex; align-items: center; min-height: 34px; line-height: 1.5; }
+.af-footer-contact li { display: flex; align-items: flex-start; gap: 12px; line-height: 1.7; }
+.af-footer-contact li + li { margin-top: 16px; }
+.af-footer-contact li > svg { width: 16px; height: 16px; color: var(--brand); flex-shrink: 0; margin-top: 3px; }
+.af-footer-contact li > div { min-width: 0; }
+.af-footer-contact li > div > span { display: block; font-size: 10px; color: #8e8c84; margin-bottom: 2px; }
+.af-footer-contact p, .af-footer-contact a { overflow-wrap: anywhere; }
+.af-footer-bottom { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; padding: 22px 0; border-top: 1px solid #ffffff12; font-size: 11px; color: #96938b; line-height: 1.7; }
+.af-footer-bottom a { display: inline-flex; align-items: center; gap: 3px; color: #d6cba9; }
+@media (max-width: 1023px) {
+  .af-footer-grid { grid-template-columns: 1.2fr 1fr; gap: 32px 48px; }
+  .af-footer-brand { grid-column: 1; grid-row: 1; }
+  .af-footer-contact { grid-column: 2; grid-row: 1; }
+  .af-footer-intro { align-items: flex-start; }
+  .af-footer h2 span { display: block; }
+}
+@media (max-width: 639px) {
+  .af-footer { padding-bottom: calc(56px + env(safe-area-inset-bottom)); }
+  .af-footer-inner { padding-inline: 22px; }
+  .af-footer-intro { flex-direction: column; gap: 20px; padding: 28px 0; }
+  .af-footer-grid { grid-template-columns: 1fr 1fr; gap: 28px 20px; padding: 30px 0; }
+  .af-footer-brand { grid-column: 1 / -1; }
+  .af-footer-brand > p { max-width: 100%; }
+  .af-footer-contact { grid-column: 1 / -1; grid-row: auto; padding-top: 24px; border-top: 1px solid #ffffff12; }
+  .af-footer h3 { font-size: 10px; margin-bottom: 12px; }
+  .af-footer-links a { min-height: 40px; }
+  .af-footer-bottom { flex-direction: column; align-items: flex-start; gap: 6px; padding: 18px 0; }
+}

@@ -15,7 +15,9 @@ import ProductReviews from "./ProductReviews";
 import { useWishlist } from "../context/WishlistContext";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import StraightenOutlinedIcon from "@mui/icons-material/StraightenOutlined";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import "./ProductGallery.css";
+import { productColorImage } from "../utils/productColorImage";
+import CheckoutLoader from "./CheckoutLoader";
 
 
 const BRAND = "var(--brand)";
@@ -71,29 +73,19 @@ function RelatedRow({ title, items, onOpen }) {
 }
 
 function SizeChart({ chart }) {
-  const [open, setOpen] = useState(true);
-  const [unit, setUnit] = useState("INCH");
   if (!chart?.columns?.length || !chart?.rows?.length) return null;
-  const display = (value, column) => {
-    if (unit === "INCH" || column.toLowerCase() === "size" || value === "" || value == null) return value;
-    const number = Number(value);
-    return Number.isFinite(number) ? Number((number * 2.54).toFixed(1)) : value;
-  };
-  return <section className="mt-6 overflow-hidden rounded-xl border" style={{ borderColor: "var(--border)" }}>
-    <button onClick={() => setOpen((v) => !v)} className="w-full flex items-center gap-3 px-4 py-3 text-left" aria-expanded={open}>
-      <span className="h-8 w-8 rounded-md bg-gray-100 flex items-center justify-center text-gray-700"><StraightenOutlinedIcon style={{ fontSize: 18 }} /></span>
-      <span className="font-bold text-sm" style={{ color: "var(--title)" }}>{chart.heading || "Size Chart"}</span>
-      <ExpandMoreIcon className={`ml-auto transition-transform ${open ? "rotate-180" : ""}`} style={{ color: "var(--subtitle)" }} />
-    </button>
-    {open && <div className="border-t px-4 py-4" style={{ borderColor: "var(--border)" }}>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 mb-3"><p className="text-xs" style={{ color: "var(--subtitle)" }}>{chart.note}</p><div className="inline-flex self-end sm:self-auto shrink-0 rounded-lg bg-gray-100 p-0.5">{["INCH", "CM"].map((u) => <button key={u} onClick={() => setUnit(u)} className={`rounded-md px-3 py-1.5 text-[10px] font-bold ${unit === u ? "bg-white shadow-sm text-gray-900" : "text-gray-500"}`}>{u}</button>)}</div></div>
-      <div className="w-full overflow-hidden rounded-lg border" style={{ borderColor: "var(--border)" }}><table className="w-full table-fixed text-[10px] sm:text-xs"><thead><tr className="bg-gray-100">{chart.columns.map((column) => <th key={column} className="px-1.5 sm:px-3 py-2.5 text-left font-bold text-gray-800 break-words">{column}</th>)}</tr></thead><tbody>{chart.rows.map((row, index) => <tr key={index} className="border-t" style={{ borderColor: "var(--border)" }}>{chart.columns.map((column) => <td key={column} className="px-1.5 sm:px-3 py-2 break-words" style={{ color: "var(--details)" }}>{display(row[column], column)}</td>)}</tr>)}</tbody></table></div>
-    </div>}
-  </section>;
+  return <details className="af-inline-size-chart" open>
+    <summary><StraightenOutlinedIcon style={{ fontSize: 16 }} /> {chart.heading || "Size Chart"}</summary>
+    <div className="border-t px-4 py-4" style={{ borderColor: "var(--border)" }}>
+      <div className="af-size-chart-meta"><p>{chart.note}</p><span className="af-size-chart-unit">Measurements in cm</span></div>
+      <div className="w-full overflow-hidden rounded-lg border" style={{ borderColor: "var(--border)" }}><table className="w-full table-fixed text-[10px] sm:text-xs"><thead><tr className="af-size-chart-header">{chart.columns.map((column) => <th key={column} className="px-1.5 sm:px-3 py-2.5 text-left font-bold break-words">{column}</th>)}</tr></thead><tbody>{chart.rows.map((row, index) => <tr key={index} className="border-t" style={{ borderColor: "var(--border)" }}>{chart.columns.map((column) => <td key={column} className="px-1.5 sm:px-3 py-2 break-words" style={{ color: "var(--details)" }}>{row[column]}</td>)}</tr>)}</tbody></table></div>
+    </div>
+  </details>;
 }
 
 export default function ProductDetail() {
   const { slug } = useParams();
+  const [checkoutItem, setCheckoutItem] = useState(null);
   const navigate = useNavigate();
   const { add } = useCart();
   const { has, toggle } = useWishlist();
@@ -108,7 +100,7 @@ export default function ProductDetail() {
   const [color, setColor] = useState(null);
   const [qty, setQty] = useState(1);
   const [error, setError] = useState("");
-  const [toast, setToast] = useState("");
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -171,20 +163,21 @@ export default function ProductDetail() {
     return true;
   };
 
-  const addToCart = () => {
-    if (!validate()) return;
-    add(product, { size, color, qty });
-    setToast(`Added ${qty} × ${product.name}${size ? ` (${size})` : ""} to your bag`);
-    setTimeout(() => setToast(""), 2500);
+  const addToCart = async () => {
+    if (adding || !validate()) return;
+    setAdding(true);
+    try { await add(product, { size, color, qty }); }
+    catch (e) { setError(e.message || "Could not add this item. Please try again."); }
+    finally { setAdding(false); }
   };
 
   const buyNow = () => {
-    if (!validate()) return;
+    if (checkoutItem || !validate()) return;
     const item = {
       id: product.id, productId: product.id, slug: product.slug, name: product.name,
-      image: product.image, price: product.price, oldPrice: product.oldPrice, size, color, qty,
+      image: productColorImage(product, color), price: product.price, oldPrice: product.oldPrice, size, color, qty,
     };
-    navigate("/checkout", { state: { items: [item] } });
+    setCheckoutItem(item);
   };
 
   const wished = product ? has(product.id) : false;
@@ -224,7 +217,7 @@ export default function ProductDetail() {
   };
 
   return (
-    <div className="w-full max-w-[1300px] mx-auto px-3 sm:px-5 lg:px-0 py-5 sm:py-8" style={{ backgroundColor: "var(--primary)" }}>
+    <div className="af-product-page" style={{ backgroundColor: "var(--primary)" }}>
       <nav className="text-xs mb-5 flex items-center flex-wrap gap-y-1" style={{ color: "var(--title)" }}>
         <Crumb to="/">Home</Crumb>
         <ChevronRightIcon style={{ fontSize: 14, color: "var(--subtitle)" }} className="mx-0.5" />
@@ -236,39 +229,43 @@ export default function ProductDetail() {
           </>
         )}
       </nav>
-      <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 items-start">
+      <div className="af-product-overview">
         {/* Gallery */}
-        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-start min-w-0">
-          <div className="flex flex-row sm:flex-col gap-2 sm:gap-3 order-2 sm:order-1 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0">
+        <div className="af-product-gallery">
+          <div className="af-product-thumbnails" aria-label="Product images">
             {(product.images || [product.image]).map((src, i) => (
               <button
                 key={i}
+                type="button"
+                aria-label={`View product image ${i + 1}`}
+                aria-pressed={mainImg === src}
                 onClick={() => setMainImg(src)}
-                className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg overflow-hidden border-2 transition-colors shrink-0"
+                className="af-product-thumbnail"
                 style={{ borderColor: mainImg === src ? BRAND : "#e5e7eb" }}
               >
-                <img src={src} alt="" className="h-full w-full object-cover" onError={(e) => imgFallback(e)} />
+                <img src={src} alt="" className="h-full w-full object-contain" onError={(e) => imgFallback(e)} />
               </button>
             ))}
           </div>
 
           <div
-            className="w-full min-w-0 order-1 sm:order-2 rounded-xl bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden group sm:cursor-zoom-in"
+            className="af-product-main-image group"
             onMouseMove={onZoomMove}
           >
             <img
               src={mainImg}
               alt={product.name}
-              className="w-full h-auto max-h-[760px] object-cover transition-transform duration-300 ease-out md:group-hover:scale-[2]"
+              className="w-full h-auto max-h-[760px] object-contain transition-transform duration-300 ease-out md:group-hover:scale-[2]"
               onError={(e) => imgFallback(e, product.name)}
             />
           </div>
         </div>
 
         {/* Info */}
-        <div>
+        <div className="af-product-info">
           <p className="text-xs uppercase tracking-widest" style={{ color: "var(--button)" }}>{product.brand}</p>
-          <h1 className="mt-1 text-2xl md:text-3xl font-bold" style={{ color: "var(--title)" }}>{product.name}</h1>
+          <div className="af-product-title-row"><h1 className="mt-1 text-2xl md:text-3xl font-bold" style={{ color: "var(--title)" }}>{product.name}</h1>
+            <button type="button" onClick={() => toggle(product)} aria-label={wished ? "Remove from wishlist" : "Add to wishlist"} aria-pressed={wished} className="af-product-wishlist">{wished ? <FavoriteIcon /> : <FavoriteBorderIcon />}</button></div>
 
           <div className="mt-2 flex items-center gap-2 text-sm" style={{ color: "var(--subtitle)" }}>
             <Stars rating={product.rating} />
@@ -292,7 +289,7 @@ export default function ProductDetail() {
               <p className="text-sm font-semibold" style={{ color: "var(--details)" }}>Color: <span className="font-normal" style={{ color: "var(--subtitle)" }}>{color || "Please select"}</span></p>
               <div className="flex gap-2">
                 {product.colors.map((c) => (
-                  <button key={c.name} onClick={() => { setColor(c.name); setError(""); }} title={c.name} className="h-8 w-8 rounded-full border-2 transition-transform hover:scale-110" style={{ backgroundColor: c.hex, borderColor: color === c.name ? BRAND : "#e5e7eb" }} />
+                  <button key={c.name} onClick={() => { setColor(c.name); setMainImg(productColorImage(product, c.name)); setError(""); }} title={c.name} className="h-8 w-8 rounded-full border-2 transition-transform hover:scale-110" style={{ backgroundColor: c.hex, borderColor: color === c.name ? BRAND : "#e5e7eb" }} />
                 ))}
               </div>
             </div>
@@ -300,7 +297,7 @@ export default function ProductDetail() {
 
           {needsSize && (
             <div className="mt-5">
-              <p className="text-sm font-semibold" style={{ color: "var(--details)" }}>Select Size</p>
+              <div className="af-product-size-heading"><p className="text-sm font-semibold" style={{ color: "var(--details)" }}>Select size</p></div>
               <div className="flex flex-wrap gap-2">
                 {product.sizes.map((s) => {
                   const variant = product.sizeVariants?.find((v) => v.name === s);
@@ -316,10 +313,11 @@ export default function ProductDetail() {
             </div>
           )}
 
-          <div className="mt-5">
-            <p className="text-sm font-semibold mb-2" style={{ color: "var(--details)" }}>Quantity</p>
+          <div className="af-product-purchase-row">
+          <div className="af-product-quantity" role="group" aria-label="Quantity">
             <div className="inline-flex items-center rounded-md border" style={{ borderColor: "var(--border)" }}>
               <button
+                aria-label="Decrease quantity"
                 onClick={() => setQty((q) => Math.max(1, q - 1))}
                 className="px-3 py-2 transition-colors"
                 style={{ color: "var(--subtitle)" }}
@@ -330,6 +328,7 @@ export default function ProductDetail() {
               </button>
               <span className="px-4 text-sm font-semibold" style={{ color: "var(--details)" }}>{qty}</span>
               <button
+                aria-label="Increase quantity"
                 onClick={() => setQty((q) => Math.min(availableStock || q + 1, q + 1))}
                 disabled={availableStock > 0 && qty >= availableStock}
                 className="px-3 py-2 transition-colors"
@@ -342,44 +341,41 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          {error && <p className="mt-5 -mb-1 text-sm font-medium text-red-500">{error}</p>}
 
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button onClick={addToCart} disabled={!product.inStock}
-              className="w-full flex items-center justify-center gap-2 rounded-md border-2 py-3 text-sm font-bold transition-colors disabled:cursor-not-allowed"
+          <div className="af-product-purchase-buttons">
+            <button onClick={addToCart} disabled={!product.inStock || adding}
+              className="w-full flex items-center justify-center gap-2 rounded-md border-2 text-sm font-bold transition-colors disabled:cursor-not-allowed"
               style={{ borderColor: product.inStock ? BRAND : "var(--border)", color: product.inStock ? BRAND : "var(--subtitle)", opacity: product.inStock ? 1 : 0.7 }}
               onMouseEnter={(e) => { if (product.inStock) { e.currentTarget.style.backgroundColor = BRAND; e.currentTarget.style.color = "var(--button-text)"; } }}
               onMouseLeave={(e) => { if (product.inStock) { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = BRAND; } }}>
-              <ShoppingBagOutlinedIcon style={{ fontSize: 18 }} /> Add to Cart
+              <ShoppingBagOutlinedIcon style={{ fontSize: 18 }} /> {adding ? "Adding..." : "Add to Cart"}
             </button>
-            <button onClick={buyNow} disabled={!product.inStock} className="w-full rounded-md py-3 text-sm font-bold transition-opacity hover:opacity-90 disabled:cursor-not-allowed" style={{ backgroundColor: product.inStock ? BRAND : "var(--foreground)", color: product.inStock ? "var(--button-text)" : "var(--subtitle)", border: "1px solid var(--border)", opacity: product.inStock ? 1 : 0.7 }}>
+            <button onClick={buyNow} disabled={!product.inStock || !!checkoutItem} className="w-full rounded-md text-sm font-bold transition-opacity hover:opacity-90 disabled:cursor-not-allowed" style={{ backgroundColor: product.inStock ? BRAND : "var(--foreground)", color: product.inStock ? "var(--button-text)" : "var(--subtitle)", border: "1px solid var(--border)", opacity: product.inStock ? 1 : 0.7 }}>
               Buy Now
-            </button>
-            <button onClick={() => toggle(product)} aria-label="Wishlist" className="sm:col-span-2 rounded-md border border-var(--title) px-3 py-2.5 transition-colors hover:border-gray-300" style={{ color: wished ? BRAND : "var(--title)" }}>
-              {wished ? <FavoriteIcon /> : <FavoriteBorderIcon />}
             </button>
           </div>
 
+          </div>
+          {error && <p role="alert" className="text-sm text-red-500">{error}</p>}
           <div className="mt-5 flex items-center gap-2 text-sm var(--details)" style={{ color: "var(--details)" }}>
             <LocalShippingOutlinedIcon style={{ fontSize: 18 }} />
             Cash on delivery available • Delivery in 2–5 days
           </div>
-          <div className="mt-6 border-t border-gray-100 pt-5">
-            <h3 className="text-base font-bold" style={{ color: "var(--title)" }}>Product Description</h3>
-            <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--details)" }}>{product.description}</p>
-            <SizeChart chart={product.sizeChart} />
-          </div>
+          <SizeChart chart={product.sizeChart} />
         </div>
       </div>
+      <section className="af-product-description">
+        <h2>Product description</h2>
+        <p>{product.description || "Contact us for more information about this product."}</p>
+      </section>
+      {checkoutItem && <CheckoutLoader key={slug} item={checkoutItem} />}
       <ProductReviews productId={product.id} />
       <RelatedRow title="You may also like" items={related} onOpen={openProduct} />
       <RelatedRow title={`More from ${product.categoryName}`} items={sameCategory} onOpen={openProduct} />
 
 
 
-      {toast && (
-        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[200] w-[calc(100%-2rem)] max-w-md rounded-2xl sm:rounded-full bg-gray-900 text-white text-center text-sm px-5 py-2.5 shadow-lg">{toast}</div>
-      )}
+
     </div>
   );
   function Crumb({ to, children }) {

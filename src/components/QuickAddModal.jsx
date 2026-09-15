@@ -6,6 +6,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import { getProductBySlug } from "../api";
+import { productColorImage } from "../utils/productColorImage";
 import { useCart } from "../context/CartContext";
 
 const BRAND = "var(--brand)";
@@ -20,6 +21,7 @@ export default function QuickAddModal({ slug, onClose }) {
   const [size, setSize] = useState(null);
   const [color, setColor] = useState(null);
   const [qty, setQty] = useState(1);
+  const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
 
   useEffect(() => {
@@ -39,12 +41,16 @@ export default function QuickAddModal({ slug, onClose }) {
   const needsSize = product?.sizes?.length > 0;
   const needsColor = product?.colors?.length > 0;
 
-  const confirm = () => {
+  const confirm = async () => {
+    if (saving || !product?.inStock) return;
     if (needsColor && !color) { setError("Please select a color."); return; }
     if (needsSize && !size) { setError("Please select a size."); return; }
-    add(product, { size, color, qty });
-    setDone(true);
-    setTimeout(onClose, 900);
+    const variant = product.sizeVariants?.find((v) => v.name === size);
+    if (variant && qty > variant.stock) { setError(`Only ${variant.stock} available in this size.`); return; }
+    setSaving(true);
+    try { await add(product, { size, color, qty }); onClose(); }
+    catch (e) { setError(e.message || "Could not add this product. Please try again."); }
+    finally { setSaving(false); }
   };
 
   return (
@@ -64,7 +70,7 @@ export default function QuickAddModal({ slug, onClose }) {
               <div className="h-8 rounded animate-pulse" style={{ backgroundColor: "rgba(255,255,255,.05)" }} />
             </div>
           </div>
-        ) : error ? (
+        ) : error && !product ? (
           <div className="p-6 text-center text-sm" style={{ color: "#F87171" }}>{error}</div>
         ) : done ? (
           <div className="p-8 text-center">
@@ -74,8 +80,9 @@ export default function QuickAddModal({ slug, onClose }) {
         ) : product ? (
           <>
             <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+              {error && <p role="alert" className="text-sm text-red-400">{error}</p>}
               <div className="flex gap-4">
-                <img src={product.image} alt={product.name} className="h-32 w-24 rounded-lg object-cover" style={{ backgroundColor: "#0F0F0F" }} onError={(e) => imgFallback(e, product.name)} />
+                <img src={productColorImage(product, color)} alt={product.name} className="h-32 w-24 rounded-lg object-cover" style={{ backgroundColor: "#0F0F0F" }} onError={(e) => imgFallback(e, product.name)} />
                 <div className="min-w-0">
                   <p className="text-xs uppercase tracking-widest" style={{ color: "var(--subtitle)", opacity: 0.7 }}>{product.brand}</p>
                   <p className="text-sm font-semibold" style={{ color: "var(--details)" }}>{product.name}</p>
@@ -126,7 +133,7 @@ export default function QuickAddModal({ slug, onClose }) {
 
             <div className="flex items-center gap-3 px-5 py-4 border-t" style={{ borderColor: "var(--border)" }}>
               <button onClick={onClose} className="rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-white/5" style={{ color: "var(--subtitle)" }}>Cancel</button>
-              <button onClick={confirm} disabled={!product.inStock} className="flex-1 flex items-center justify-center gap-1.5 rounded-lg px-5 py-2.5 text-sm font-bold disabled:opacity-50" style={{ backgroundColor: "var(--button)", color: "var(--button-text)" }}>
+              <button onClick={confirm} disabled={saving || !product.inStock} className="flex-1 flex items-center justify-center gap-1.5 rounded-lg px-5 py-2.5 text-sm font-bold disabled:opacity-50" style={{ backgroundColor: "var(--button)", color: "var(--button-text)" }}>
                 <ShoppingBagOutlinedIcon style={{ fontSize: 18 }} /> Add to Bag
               </button>
             </div>

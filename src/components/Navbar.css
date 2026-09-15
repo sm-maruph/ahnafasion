@@ -1,0 +1,63 @@
+.af-navbar-layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px 16px;
+  width: calc(100% - 32px);
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 10px 0;
+}
+
+.af-navbar-logo { min-width: 0; width: fit-content; max-width: 100%; }
+.af-navbar-logo > img, .af-navbar-logo > span:first-child { flex-shrink: 0; }
+.af-navbar-wordmark { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.af-navbar-categories, .af-navbar-actions { display: none; }
+.af-navbar-toggle { grid-column: 2; grid-row: 1; }
+.af-navbar-search { grid-column: 1 / -1; min-width: 0; width: 100%; }
+
+.af-search-form {
+  min-width: 0;
+  height: 40px;
+  padding: 0 12px 0 16px;
+  border-radius: 999px;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.af-search-form:focus-within {
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 0 2px var(--border);
+}
+.af-search-form input { width: 100%; border: 0; padding: 0; }
+.af-search-form button { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 28px; height: 36px; }
+
+@media (min-width: 768px) {
+  .af-navbar-layout { grid-template-columns: minmax(0, 1fr) minmax(200px, 320px) auto; }
+  .af-navbar-search { grid-column: 2; grid-row: 1; }
+  .af-navbar-toggle { grid-column: 3; }
+}
+
+@media (min-width: 1280px) {
+  .af-navbar-layout { grid-template-columns: auto minmax(0, 1fr) minmax(200px, 280px) auto; gap: 20px; }
+  .af-navbar-categories {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+  .af-navbar-categories > li > button { padding: 10px 8px; white-space: nowrap; }
+  .af-navbar-search { grid-column: 3; }
+  .af-navbar-actions { display: flex; align-items: center; gap: 16px; }
+  .af-navbar-actions > button, .af-navbar-actions > div > button { min-width: 40px; min-height: 44px; justify-content: center; }
+  .af-navbar-toggle { display: none; }
+}
+
+@media (min-width: 1536px) {
+  .af-navbar-layout { grid-template-columns: auto minmax(0, 1fr) 320px auto; gap: 28px; }
+  .af-navbar-categories > li > button { padding-inline: 12px; }
+  .af-navbar-actions { gap: 20px; }
+}
