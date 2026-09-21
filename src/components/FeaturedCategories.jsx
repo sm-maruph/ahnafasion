@@ -209,7 +209,6 @@ export default function FeaturedCategories({
   brandLink = "/new-arrivals",
   tagline = "Because comfort and confidence go hand in hand.",
   description = "We focus on carefully selecting the best clothing that is comfortable, looks great, and makes you confident. Beyond fabric, design, and fit, every piece passes strict quality checks — because the right outfit changes how you see yourself.",
-  sideImage = "https://loremflickr.com/700/360/fabric?lock=5001",
   spotlightsProp,
   perCategory = 8,
   onProductClick,
@@ -266,7 +265,6 @@ export default function FeaturedCategories({
             <p className="mt-2 text-lg md:text-xl font-medium" style={{ color: "var(--subtitle)" }}>{tagline}</p>
             <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--subtitle)" }}>{description}</p>
           </div>
-          <img src={sideImage} alt="" aria-hidden="true" loading="lazy" className="hidden lg:block absolute top-0 right-0 w-[100%] max-w-[360px] h-[80%] max-h-[260px] object-contain pointer-events-none" onError={(e) => (e.target.style.display = "none")} />
         </div>
 
         <div className="mt-8 space-y-10">

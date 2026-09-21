@@ -42,9 +42,9 @@ function MiniCard({ product, onOpen }) {
   const discount = product.oldPrice && product.oldPrice > product.price ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
   return (
     <div className="group cursor-pointer" onClick={() => onOpen(product)}>
-      <div className="relative rounded-xl bg-gray-50 overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
+      <div className="relative rounded-xl border overflow-hidden shadow-sm hover:shadow-lg transition-shadow" style={{ backgroundColor: "var(--foreground)", borderColor: "var(--border)" }}>
         {discount > 0 && <span className="absolute top-2 left-2 z-10 text-[10px] font-bold text-white px-1.5 py-0.5 rounded" style={{ backgroundColor: BRAND, color: "var(--button-text)" }}>-{discount}%</span>}
-        <div className="aspect-[3/4] flex items-center justify-center p-3 bg-gradient-to-b from-gray-50 to-gray-100">
+        <div className="aspect-[3/4] flex items-center justify-center p-3">
           <img src={product.image} alt={product.name} loading="lazy" className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105" onError={(e) => imgFallback(e, product.name)} />
         </div>
       </div>
