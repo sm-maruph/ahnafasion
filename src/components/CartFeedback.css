@@ -23,3 +23,17 @@
   .af-cart-confirmation, .af-cart-success-icon, .af-cart-success-icon::before, .af-cart-progress > span { animation: none; }
   .af-cart-success-icon::before { display: none; }
 }
+
+.af-floating-cart-docked { position: relative; z-index: auto; width: 44px; height: 44px; flex-shrink: 0; border: 0; cursor: pointer; touch-action: auto; color: var(--button-text); box-shadow: 0 10px 15px -3px #0002, 0 4px 6px -4px #0002; }
+.af-floating-cart-docked:active { cursor: pointer; }
+.af-floating-cart-docked:focus-visible { outline: 2px solid var(--brand); outline-offset: 4px; }
+.af-floating-cart-docked .af-floating-cart-count { min-width: 18px; height: 18px; top: -4px; right: -4px; font-size: 9px; }
+
+@media (max-width: 639px) {
+  .af-floating-actions { gap: 8px; right: 12px; }
+  .af-floating-actions > a,
+  .af-floating-actions > button { width: 34px; height: 34px; }
+  .af-floating-actions > a > svg,
+  .af-floating-actions > button > svg { width: 17px; height: 17px; }
+  .af-floating-actions .af-floating-cart-count { min-width: 15px; height: 15px; padding: 0 3px; font-size: 8px; top: -3px; right: -3px; }
+}

@@ -10,7 +10,7 @@ const clampPosition = (position) => ({
   y: Math.max(12, Math.min(position.y, window.innerHeight - (window.innerWidth < 768 ? 130 : 80))),
 });
 
-export default function CartFeedback() {
+export default function CartFeedback({ docked = false }) {
   const { count, confirmation, dismissConfirmation } = useCart();
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -60,8 +60,16 @@ export default function CartFeedback() {
     if (moved.current) setPosition(clampPosition({ x: start.position.x + dx, y: start.position.y + dy }));
   };
 
-  return createPortal(<>
-    {count > 0 && pathname !== "/cart" && <button
+  const content = <>
+    {count > 0 && pathname !== "/cart" && (docked ? <button
+      className="af-floating-cart af-floating-cart-docked"
+      aria-label={`Open bag, ${count} items`}
+      title="Open bag"
+      onClick={() => navigate("/cart")}
+    >
+      <ShoppingBag size={22} aria-hidden="true" />
+      <span className="af-floating-cart-count">{count > 99 ? "99+" : count}</span>
+    </button> : <button
       className="af-floating-cart"
       style={{ left: position.x, top: position.y }}
       aria-label={`Open bag, ${count} items. Use arrow keys to move this button.`}
@@ -85,7 +93,7 @@ export default function CartFeedback() {
     >
       <ShoppingBag size={24} aria-hidden="true" />
       {count > 0 && <span className="af-floating-cart-count">{count > 99 ? "99+" : count}</span>}
-    </button>}
+    </button>)}
     {confirmation && <dialog ref={dialog} className="af-cart-confirmation" aria-labelledby="af-cart-added-title"
       onCancel={() => dismiss.current()}
       onClick={(event) => { if (event.target === event.currentTarget) dismiss.current(); }}>
@@ -98,5 +106,6 @@ export default function CartFeedback() {
         <span className="af-cart-progress" aria-hidden="true"><span /></span>
       </div>
     </dialog>}
-  </>, document.body);
+  </>;
+  return docked ? content : createPortal(content, document.body);
 }

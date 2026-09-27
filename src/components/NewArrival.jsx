@@ -36,7 +36,7 @@ function ProductTile({ product, onOpen, onAddToCart, onBuyNow, onToggleWishlist,
   return (
     <div
       className="group relative rounded-xl border shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden cursor-pointer flex flex-col"
-      style={{ backgroundColor: "var(--foreground)", borderColor: "var(--title)" }}
+      style={{ background: "var(--card-surface)", boxShadow: "var(--surface-shadow)", borderColor: "var(--title)" }}
       onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--gold-light)"; }}
       onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--gold-deep)"; }}
       onClick={() => onOpen(product)}
@@ -60,7 +60,7 @@ function ProductTile({ product, onOpen, onAddToCart, onBuyNow, onToggleWishlist,
       </button>
 
       {/* Image — FIXED height so every card is identical */}
-      <div className="h-56 sm:h-60 w-full flex items-center justify-center" style={{ background: "linear-gradient(to bottom, #1F1F1F, #0F0F0F)" }}>
+      <div className="h-56 sm:h-60 w-full flex items-center justify-center" style={{ background: "var(--image-surface)" }}>
         <img src={product.image} alt={product.name} loading="lazy" className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105" onError={imgFallback} />
       </div>
 
@@ -117,7 +117,7 @@ function ProductTile({ product, onOpen, onAddToCart, onBuyNow, onToggleWishlist,
 
 function SkeletonTile() {
   return (
-    <div className="rounded-xl border overflow-hidden" style={{ backgroundColor: "var(--foreground)", borderColor: "var(--border)" }}>
+    <div className="rounded-xl border overflow-hidden" style={{ background: "var(--card-surface)", boxShadow: "var(--surface-shadow)", borderColor: "var(--border)" }}>
       <div className="h-56 sm:h-60 animate-pulse" style={{ backgroundColor: "rgba(212,175,55,.06)" }} />
       <div className="p-3 space-y-2">
         <div className="h-3 rounded w-3/4 animate-pulse" style={{ backgroundColor: "rgba(212,175,55,.06)" }} />
@@ -170,9 +170,9 @@ export default function NewArrival({
   return (
     <section
       className="w-full mt-1 md:mt-12 lg:mt-16 overflow-hidden"
-      style={{ backgroundColor: "var(--primary)" }}
+      
     >
-      <div className="w-full pt-2 pb-1 px-4" style={{ backgroundColor: "var(--primary)" }}>
+      <div className="w-full pt-2 pb-1 px-4" >
         <h2 className="text-center text-xs sm:text-base md:text-lg lg:text-xl font-serif italic font-semibold uppercase tracking-[0.08em] sm:tracking-[0.15em] md:tracking-[0.25em] leading-snug px-3" style={{ color: BRAND }}>
           {title}
         </h2>

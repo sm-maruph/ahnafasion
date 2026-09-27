@@ -10,6 +10,7 @@ import { useWishlist } from "../context/WishlistContext";
 import QuickAddModal from "./QuickAddModal";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 
 const BRAND = "var(--brand)";
 const taka = (n) => `\u09F3${Number(n || 0).toLocaleString("en-BD")}`;
@@ -17,7 +18,7 @@ const slugify = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").repla
 const imgFallback = (e, label = "RAINZ") => { e.target.onerror = null; e.target.src = `https://placehold.co/600x600/f3f4f6/9ca3af?text=${encodeURIComponent(label)}`; };
 const CATEGORY_PLACEHOLDER = (label) => `https://placehold.co/800x1000/f3f4f6/9ca3af?text=${encodeURIComponent(label || "RAINZ")}`;
 
-function ProductMini({ product, isViewMore, accent, onOpen, onViewMore, onAdd, onBuyNow }) {
+function ProductMini({ product, isViewMore, categoryLabel, accent, onOpen, onViewMore, onAdd, onBuyNow }) {
   const { has, toggle } = useWishlist();
   function Stars({ rating = 0, size = 13 }) {
     const full = Math.round(rating);
@@ -34,16 +35,24 @@ function ProductMini({ product, isViewMore, accent, onOpen, onViewMore, onAdd, o
 
   if (isViewMore) {
     return (
-      <div className="flex flex-col rounded-xl bg-white shadow-sm overflow-hidden cursor-pointer group" onClick={onViewMore}>
-        <div className="h-44 sm:h-48 bg-gray-50 relative">
-          <div className="absolute inset-0 bg-black/45 flex items-center justify-center">
-            <span className="text-white font-bold tracking-widest text-base md:text-lg text-center leading-tight">VIEW<br />MORE</span>
-          </div>
-        </div>
-        <div className="px-3 pt-2 pb-3 space-y-2">
-          <div className="h-3" /><div className="h-5" /><div className="h-7" /><div className="h-7" />
-        </div>
-      </div>
+      <button
+        type="button"
+        onClick={onViewMore}
+        aria-label={`View more ${categoryLabel || "products"}`}
+        className="group relative flex h-full min-h-[320px] w-full flex-col items-center justify-center gap-4 overflow-hidden rounded-xl border border-[var(--border)] px-4 py-8 text-center transition-colors duration-300 hover:border-[var(--brand)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand)]"
+        style={{ background: "radial-gradient(ellipse at top, rgba(212,175,55,0.10), transparent 70%), var(--foreground)", color: "var(--details)" }}
+      >
+        <span className="text-[10px] font-medium uppercase tracking-[0.2em]" style={{ color: "var(--subtitle)" }}>
+          More to discover
+        </span>
+        <span className="flex h-14 w-14 items-center justify-center rounded-full border border-[var(--brand)] text-[var(--brand)] transition-colors duration-300 group-hover:bg-[var(--brand)] group-hover:text-[var(--button-text)]">
+          <ArrowForwardRoundedIcon aria-hidden="true" className="transition-transform duration-300 motion-safe:group-hover:translate-x-1" />
+        </span>
+        <span className="text-xl font-semibold">View more</span>
+        <span className="max-w-[180px] text-xs leading-relaxed" style={{ color: "var(--subtitle)" }}>
+          Explore the {categoryLabel || "full"} collection
+        </span>
+      </button>
     );
   }
 
@@ -52,7 +61,7 @@ function ProductMini({ product, isViewMore, accent, onOpen, onViewMore, onAdd, o
 
   return (
     <div className="group flex flex-col rounded-xl border shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-      style={{ backgroundColor: "var(--foreground)", borderColor: "var(--border)" }}>
+      style={{ background: "var(--card-surface)", boxShadow: "var(--surface-shadow)", borderColor: "var(--border)" }}>
       <div className="relative cursor-pointer" onClick={() => onOpen(product)}>
         {discount > 0 && (
           <span className="absolute top-2 left-2 z-10 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: BRAND, color: "var(--button-text)" }}>-{discount}%</span>
@@ -67,7 +76,7 @@ function ProductMini({ product, isViewMore, accent, onOpen, onViewMore, onAdd, o
           {wished ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
         </button>
         {/* Fixed-height image keeps all cards uniform */}
-        <div className="h-44 sm:h-48 flex items-center justify-center" style={{ background: "linear-gradient(to bottom, #1F1F1F, #0F0F0F)" }}>
+        <div className="h-44 sm:h-48 flex items-center justify-center" style={{ background: "var(--image-surface)" }}>
           <img src={product.image} alt={product.name} loading="lazy" className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105" onError={(e) => imgFallback(e, product.name)} />
         </div>
       </div>
@@ -190,6 +199,7 @@ function Spotlight({ spotlight, products, loading, onOpen, onGo, onAdd, onBuyNow
             <ProductMini
               key={p.id ?? i}
               product={p}
+              categoryLabel={spotlight.label}
               accent={accent}
               isViewMore={!activeSub && i === slots.length - 1 && products.length > count}
               onOpen={onOpen}
@@ -255,7 +265,7 @@ export default function FeaturedCategories({
   const handleBuyNow = (p) => navigate(`/product/${p.slug}`);
 
   return (
-    <section className="w-full" style={{ backgroundColor: "var(--primary)" }}>
+    <section className="w-full" >
       <div className="w-[94%] max-w-[1500px] mx-auto py-10">
         <div className="relative">
           <div className="max-w-3xl">

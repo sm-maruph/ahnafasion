@@ -69,3 +69,15 @@ test("floating cart is hidden when empty and appears when an item is added", () 
   rerender(<CartFeedback />);
   expect(screen.queryByRole("button", { name: /Open bag/ })).toBeNull();
 });
+
+
+test("docked bag ignores saved floating position and opens the cart", () => {
+  localStorage.setItem("af-cart-position", JSON.stringify({ x: 120, y: 240 }));
+  render(<CartFeedback docked />);
+  const button = screen.getByRole("button", { name: "Open bag, 3 items" });
+  expect(button.classList.contains("af-floating-cart-docked")).toBe(true);
+  expect(button.style.left).toBe("");
+  expect(button.style.top).toBe("");
+  fireEvent.click(button);
+  expect(mockNavigate).toHaveBeenCalledWith("/cart");
+});

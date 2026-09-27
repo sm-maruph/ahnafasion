@@ -29,7 +29,7 @@ function ProductCard({ product, accent, onOpen, onAdd }) {
 
   return (
     <div className="group flex flex-col rounded-xl border shadow-sm hover:shadow-lg transition-shadow overflow-hidden"
-      style={{ backgroundColor: "var(--foreground)", borderColor: "var(--button)" }}>
+      style={{ background: "var(--card-surface)", boxShadow: "var(--surface-shadow)", borderColor: "var(--button)" }}>
       <div className="relative cursor-pointer" onClick={() => onOpen(product)}>
         {discount > 0 && (
           <span className="absolute top-2 left-2 z-10 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: "var(--button)", color: "var(--button-text)" }}>-{discount}%</span>
@@ -45,7 +45,7 @@ function ProductCard({ product, accent, onOpen, onAdd }) {
         </button>
 
         {/* Fixed-height image keeps every card identical */}
-        <div className="h-56 sm:h-60 flex items-center justify-center" style={{ background: "linear-gradient(to bottom, #1F1F1F, #0F0F0F)" }}>
+        <div className="h-56 sm:h-60 flex items-center justify-center" style={{ background: "var(--image-surface)" }}>
           <img src={product.image} alt={product.name} loading="lazy" className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105" onError={(e) => imgFallback(e, product.name)} />
         </div>
       </div>
@@ -95,7 +95,7 @@ function ProductCard({ product, accent, onOpen, onAdd }) {
 
 function CardSkeleton() {
   return (
-    <div className="rounded-xl border shadow-sm overflow-hidden" style={{ backgroundColor: "var(--foreground)", borderColor: "var(--border)" }}>
+    <div className="rounded-xl border shadow-sm overflow-hidden" style={{ background: "var(--card-surface)", boxShadow: "var(--surface-shadow)", borderColor: "var(--border)" }}>
       <div className="h-56 sm:h-60 animate-pulse" style={{ backgroundColor: "rgba(255,255,255,.05)" }} />
       <div className="p-3 space-y-2">
         <div className="h-2.5 rounded w-1/3 animate-pulse" style={{ backgroundColor: "rgba(255,255,255,.05)" }} />
@@ -157,7 +157,7 @@ export default function CategoryPage() {
   const handleAdd = (p) => setQuickSlug(p.slug); // popup enforces size/color/qty
 
   return (
-    <div className="w-[94%] max-w-[1500px] mx-auto py-8 min-h-screen" style={{ backgroundColor: "var(--primary)" }}>
+    <div className="w-[94%] max-w-[1500px] mx-auto py-8 min-h-screen">
       {/* Breadcrumb */}
       <nav className="text-xs mb-3 flex items-center flex-wrap gap-y-1" style={{ color: "var(--title)" }}>
         <Crumb to="/">Home</Crumb>
@@ -237,7 +237,7 @@ export default function CategoryPage() {
             value={sort}
             onChange={(e) => setSort(e.target.value)}
             className="rounded-md border px-2 py-1.5 text-sm outline-none"
-            style={{ backgroundColor: "var(--foreground)", borderColor: "var(--border)", color: "var(--details)" }}
+            style={{ background: "var(--card-surface)", boxShadow: "var(--surface-shadow)", borderColor: "var(--border)", color: "var(--details)" }}
           >
             {SORTS.map((s) => <option key={s.value} value={s.value} style={{ backgroundColor: "#171717", color: "#F8F6F2" }}>{s.label}</option>)}
           </select>

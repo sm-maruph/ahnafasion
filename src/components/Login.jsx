@@ -44,7 +44,7 @@ export default function Login() {
   };
 
   return (
-    <div className="relative min-h-[calc(100svh-4rem)] overflow-hidden px-3 py-6 sm:px-6 sm:py-10 lg:px-10" style={{ backgroundColor: "var(--primary)" }}>
+    <div className="relative min-h-[calc(100svh-4rem)] overflow-hidden px-3 py-6 sm:px-6 sm:py-10 lg:px-10">
       <div className="pointer-events-none absolute -left-32 top-1/4 h-72 w-72 rounded-full blur-3xl" style={{ backgroundColor: "rgba(212,175,55,.08)" }} />
       <div className="pointer-events-none absolute -right-28 bottom-0 h-80 w-80 rounded-full blur-3xl" style={{ backgroundColor: "rgba(212,175,55,.06)" }} />
 

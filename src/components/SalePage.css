@@ -1,0 +1,52 @@
+.sale-page { color: var(--details); }
+.sale-hero { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 32px; overflow: hidden; padding: 44px 56px; border: 1px solid var(--border); border-radius: 20px; background: radial-gradient(ellipse at 95% 10%, rgba(212,175,55,.13), transparent 60%), var(--foreground); }
+.sale-eyebrow { display: flex; align-items: center; gap: 9px; margin: 0 0 18px; color: var(--brand); font-size: 11px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; }
+.sale-hero h1 { margin: 0; color: var(--details); font-size: clamp(30px, 4vw, 52px); line-height: 1.18; font-weight: 500; }
+.sale-hero h1 > span { color: var(--brand); }
+.sale-intro { margin: 18px 0 22px; color: var(--subtitle); font-size: 14px; line-height: 1.7; }
+.sale-hero-link { display: inline-flex; align-items: center; gap: 24px; padding-bottom: 6px; border-bottom: 1px solid var(--brand); color: var(--brand); text-decoration: none; font-size: 13px; font-weight: 600; }
+.sale-hero-link:hover { color: var(--details); }
+.sale-hero-offer { min-width: 230px; padding: 18px 36px; border-left: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; color: var(--subtitle); font-size: 12px; letter-spacing: .08em; }
+.sale-hero-offer strong { color: var(--brand); font-size: clamp(64px, 7vw, 100px); line-height: 1.3; font-weight: 500; letter-spacing: -.06em; }
+.sale-hero-offer strong span { font-size: .45em; letter-spacing: 0; }
+.sale-toolbar { padding: 0 0 20px; border-bottom: 1px solid var(--border); scroll-margin-top: 140px; }
+.sale-filter { padding: 9px 16px; border: 1px solid var(--border); border-radius: 999px; background: var(--foreground); color: var(--subtitle); font-size: 12px; font-weight: 500; transition: border-color .2s, color .2s; }
+.sale-filter:hover { border-color: var(--brand); color: var(--details); }
+.sale-filter.is-active { background: var(--brand); border-color: var(--brand); color: var(--button-text); }
+.sale-sort-label { color: var(--subtitle); font-size: 12px; }
+.sale-sort { padding: 10px 12px; max-width: 100%; border: 1px solid var(--border); border-radius: 8px; background: var(--foreground); color: var(--details); font-size: 12px; }
+.sale-result-count { margin: 20px 0 0; color: var(--subtitle); font-size: 12px; }
+.sale-card { position: relative; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border); border-radius: 12px; background: var(--card-surface); box-shadow: var(--surface-shadow); transition: border-color .2s; }
+.sale-card:hover { border-color: var(--brand); }
+.sale-badge { position: absolute; top: 12px; left: 12px; z-index: 1; padding: 4px 8px; border-radius: 5px; background: var(--brand); color: var(--button-text); font-size: 11px; font-weight: 700; }
+.sale-wishlist { position: absolute; top: 10px; right: 10px; z-index: 1; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: 1px solid var(--border); border-radius: 50%; background: rgba(11,11,11,.8); }
+.sale-image { display: flex; align-items: center; justify-content: center; width: 100%; height: 250px; padding: 12px 8px 0; background: var(--image-surface); overflow: hidden; }
+.sale-card-body { display: flex; flex: 1; flex-direction: column; padding: 16px; }
+.sale-product-name { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 40px; text-align: left; color: var(--details); font-size: 12px; line-height: 20px; }
+.sale-product-name:hover { text-decoration: underline; }
+.sale-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 9px; margin-top: 12px; }
+.sale-price > span { color: var(--brand); font-size: 17px; font-weight: 600; }
+.sale-price del { color: var(--subtitle); font-size: 11px; }
+.sale-countdown { display: flex; align-items: center; gap: 5px; margin: 8px 0 0; color: var(--subtitle); font-size: 10px; font-variant-numeric: tabular-nums; }
+.sale-add { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; margin-top: 18px; border-radius: 7px; padding: 10px 6px; color: var(--button-text); font-size: 12px; font-weight: 600; }
+
+
+.sale-page button:focus-visible, .sale-page a:focus-visible, .sale-page select:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.sale-page .animate-pulse { background: var(--foreground); }
+.sale-empty { padding: 64px 16px; text-align: center; color: var(--subtitle); }
+.sale-empty p { color: var(--details); font-size: 20px; }
+.sale-empty span { font-size: 13px; }
+@media (max-width: 639px) {
+  .sale-hero { padding: 28px 22px; gap: 26px; flex-direction: column; align-items: stretch; }
+  .sale-hero-offer { min-width: 0; padding: 20px 0 0; border-left: 0; border-top: 1px solid var(--border); flex-direction: row; justify-content: space-between; gap: 10px; font-size: 10px; letter-spacing: 0; }
+  .sale-hero-offer strong { font-size: 52px; line-height: 1; }
+  .sale-intro { font-size: 12px; }
+  .sale-filter { padding: 8px 12px; font-size: 11px; }
+  .sale-image { height: 200px; padding: 8px 0 0; }
+  .sale-card-body { padding: 12px 10px; }
+  .sale-badge { top: 9px; left: 8px; }
+  .sale-price > span { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sale-page *, .sale-page *::before, .sale-page *::after { transition: none !important; }
+}

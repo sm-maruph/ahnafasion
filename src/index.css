@@ -1,10 +1,4 @@
-/* ============================================================
-   AHNAF FASHION BD — luxury gold on black
-   Brand guide:
-     Rich Black #0B0B0B · Charcoal #171717 · Luxury Gold #D4AF37
-     Antique Gold #B88A2D · Champagne Gold #E7C46A · Ivory White #F8F6F2
-     Soft Grey #BDBDBD · Bronze #6E5424
-   ============================================================ */
+/* Ahnaf Fashion: warm obsidian, smoked charcoal, ivory and champagne. */
 
 /* Fonts: Cinzel (headings) + Poppins (body) */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -15,29 +9,29 @@
      from store_settings.theme. This value is only the pre-load fallback —
      set Theme Colors → Primary/Brand to #D4AF37 in /admin/settings too. */
   --brand:       #D4AF37;   /* Luxury Gold  — buttons, badges, accents (BRAND in components) */
-  --primary:     #0B0B0B;   /* Rich Black   — page & section BACKGROUND (components use it this way) */
-  --secondary:   #171717;   /* Charcoal     — navbar / raised surfaces */
-  --tertiary:    #0B0B0B;   /* Rich Black   — secondary nav strip */
+  --primary:     #191816;   /* Rich Black   — page & section BACKGROUND (components use it this way) */
+  --secondary:   #1E1D1A;   /* Charcoal     — navbar / raised surfaces */
+  --tertiary:    #191816;   /* Rich Black   — secondary nav strip */
 
   /* ---- Text ---- */
-  --title:       #D4AF37;   /* Luxury Gold  — headings */
-  --subtitle:    #BDBDBD;   /* Soft Grey    — subheadings (readable on black) */
-  --details:     #F8F6F2;   /* Ivory White  — body copy */
+  --title:       #DAC394;   /* Luxury Gold  — headings */
+  --subtitle:    #BCB6AB;   /* Soft Grey    — subheadings (readable on black) */
+  --details:     #F3EEE5;   /* Ivory White  — body copy */
 
   /* ---- Surfaces ---- */
-  --background:  #0B0B0B;   /* Rich Black   — page background */
-  --foreground:  #171717;   /* Charcoal     — cards, panels */
+  --background:  #141311;   /* Rich Black   — page background */
+  --foreground:  #24221F;   /* Charcoal     — cards, panels */
 
   /* ---- Button ---- */
   --button:      #D4AF37;   /* Luxury Gold */
-  --button-text: #0B0B0B;   /* Rich Black on gold = high contrast */
+  --button-text: #141311;   /* Rich Black on gold = high contrast */
   --button-hover:#E7C46A;   /* Champagne Gold */
 
   /* ---- Extra brand tokens ---- */
   --gold-light:  #E7C46A;   /* Champagne */
   --gold-deep:   #B88A2D;   /* Antique */
   --bronze:      #6E5424;
-  --border:      rgba(212, 175, 55, 0.22);  /* thin gold hairlines */
+  --border:      rgba(218, 195, 148, 0.18);  /* thin gold hairlines */
   --gold-gradient: linear-gradient(90deg, #B88A2D 0%, #D4AF37 50%, #E7C46A 100%);
 
   /* ---- Category accents (all gold per the brand guide) ---- */
@@ -46,6 +40,14 @@
   --accent-kids:        #D4AF37;
   --accent-accessories: #D4AF37;
   --accent-sale:        #D4AF37;
+
+  /* Layered surfaces keep large dark areas from feeling flat. */
+  --surface-raised: #2D2A25;
+  --page-surface: radial-gradient(ellipse at 12% 0%, rgba(166, 133, 80, .10), transparent 52%), linear-gradient(135deg, #1C1B18, #141311 75%);
+  --section-surface: radial-gradient(ellipse at 95% 40%, rgba(166, 133, 80, .06), transparent 60%), linear-gradient(180deg, #191816, #1C1A17);
+  --card-surface: linear-gradient(145deg, #2A2722, #211F1C);
+  --image-surface: radial-gradient(ellipse at top, #28251F, #121211 80%);
+  --surface-shadow: 0 12px 32px rgba(0, 0, 0, .18), inset 0 1px 0 rgba(255, 242, 215, .035);
 
   /* ---- Fonts ---- */
   --ff-heading: 'Cinzel', serif;
@@ -202,3 +204,7 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 100%;
   }
 }
+
+/* Ambient light across the page; solid colours remain useful fallbacks. */
+.storefront { background-image: var(--page-surface); }
+.storefront ::selection { background: #DAC394; color: #141311; }

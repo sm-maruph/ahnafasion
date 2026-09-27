@@ -184,7 +184,7 @@ export default function ProductDetail() {
 
   if (loading) {
     return (
-      <div className="w-[94%] max-w-[1300px] mx-auto py-10 grid lg:grid-cols-2 gap-10" style={{ backgroundColor: "var(--primary)" }}>
+      <div className="w-[94%] max-w-[1300px] mx-auto py-10 grid lg:grid-cols-2 gap-10">
         <div className="aspect-[3/4] rounded-xl animate-pulse" style={{ backgroundColor: "rgba(255,255,255,.05)" }} />
         <div className="space-y-4">
           <div className="h-7 rounded w-2/3 animate-pulse" style={{ backgroundColor: "rgba(255,255,255,.05)" }} />
@@ -198,7 +198,7 @@ export default function ProductDetail() {
 
   if (!product) {
     return (
-      <div className="w-[94%] max-w-[1300px] mx-auto py-24 text-center" style={{ backgroundColor: "var(--primary)" }}>
+      <div className="w-[94%] max-w-[1300px] mx-auto py-24 text-center">
         <p className="text-gray-500">Sorry, this product could not be found.</p>
         <button onClick={() => navigate("/")} className="mt-4 rounded-full px-6 py-2 text-sm font-semibold text-white" style={{ backgroundColor: BRAND }}>Back to Home</button>
       </div>
@@ -217,7 +217,7 @@ export default function ProductDetail() {
   };
 
   return (
-    <div className="af-product-page" style={{ backgroundColor: "var(--primary)" }}>
+    <div className="af-product-page">
       <nav className="text-xs mb-5 flex items-center flex-wrap gap-y-1" style={{ color: "var(--title)" }}>
         <Crumb to="/">Home</Crumb>
         <ChevronRightIcon style={{ fontSize: 14, color: "var(--subtitle)" }} className="mx-0.5" />

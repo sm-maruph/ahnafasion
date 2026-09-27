@@ -113,7 +113,7 @@ const Navbar = forwardRef(
 
     return (
       <>
-        <nav ref={ref} className="w-full fixed top-0 left-0 z-50 shadow-sm border-b border-gray-100" style={{ backgroundColor: "var(--secondary)" }}>
+        <nav ref={ref} className="w-full fixed top-0 left-0 z-50 shadow-sm border-b border-gray-100" style={{ background: "linear-gradient(120deg, #292620, var(--secondary) 65%)", borderColor: "var(--border)", boxShadow: "0 4px 24px rgba(0,0,0,.16)" }}> 
           <div className="af-navbar-layout">
 
             {/* Logo (bigger) */}

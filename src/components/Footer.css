@@ -1,7 +1,7 @@
 .af-footer {
-  background: #10100f;
-  color: #b8b6af;
-  border-top: 1px solid rgba(212, 175, 55, .25);
+  background: radial-gradient(ellipse at top left, rgba(166,133,80,.07), transparent 65%), #151411;
+  color: var(--subtitle);
+  border-top: 1px solid var(--border);
   font-family: var(--ff-body);
   font-size: 13px;
 }
