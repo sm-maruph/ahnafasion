@@ -1,3 +1,4 @@
+import { ProductCardPrice, ProductCardReviews } from "./ProductCardMeta";
 // src/components/CategoryPage.jsx — uniform cards, always-visible Add to Bag, size/color info, loading
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -9,7 +10,7 @@ import { useWishlist } from "../context/WishlistContext";
 import QuickAddModal from "./QuickAddModal";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
-const BRAND = "var(--brand)"; const taka = (n) => `\u09F3${Number(n || 0).toLocaleString("en-BD")}`;
+const BRAND = "var(--brand)"; 
 const prettify = (s = "") => s.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 const imgFallback = (e, label = "RAINZ") => { e.target.onerror = null; e.target.src = `https://placehold.co/600x800/f3f4f6/9ca3af?text=${encodeURIComponent(label)}`; };
 
@@ -55,10 +56,8 @@ function ProductCard({ product, accent, onOpen, onAdd }) {
         {product.brand && <p className="text-[11px] uppercase tracking-wide truncate" style={{ color: "var(--button)", opacity: 0.7 }}>{product.brand}</p>}
         <p className="text-sm truncate cursor-pointer hover:underline" style={{ color: "var(--details)" }} onClick={() => onOpen(product)}>{product.name}</p>
 
-        <div className="flex items-center gap-2 mt-0.5 h-5">
-          <span className="text-sm font-bold" style={{ color: "var(--button)" }}>{taka(product.price)}</span>
-          {product.oldPrice && <span className="text-xs line-through" style={{ color: "var(--button)", opacity: 0.7 }}>{taka(product.oldPrice)}</span>}
-        </div>
+        <ProductCardReviews product={product} />
+        <ProductCardPrice product={product} />
 
         {/* Colors */}
         {colors.length > 0 && (

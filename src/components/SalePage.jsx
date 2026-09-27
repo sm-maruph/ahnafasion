@@ -1,3 +1,4 @@
+import { ProductCardPrice, ProductCardReviews } from "./ProductCardMeta";
 // src/components/SalePage.jsx — shows products from active sale campaigns (computed prices)
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +14,7 @@ import "./SalePage.css";
 
 const BRAND = "var(--brand)";
 const SALE = "var(--brand)";
-const taka = (n) => `\u09F3${Number(n || 0).toLocaleString("en-BD")}`;
+
 const pctOff = (p) => (p.oldPrice && p.oldPrice > p.price ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0);
 const imgFallback = (e, label = "RAINZ") => { e.target.onerror = null; e.target.src = `https://placehold.co/600x800/f3f4f6/9ca3af?text=${encodeURIComponent(label)}`; };
 
@@ -58,10 +59,8 @@ function SaleCard({ product, onOpen, onAdd }) {
 
       <div className="sale-card-body">
         <button className="sale-product-name" onClick={() => onOpen(product)}>{product.name}</button>
-        <div className="sale-price">
-          <span>{taka(product.price)}</span>
-          {off > 0 && <del>{taka(product.oldPrice)}</del>}
-        </div>
+        <ProductCardReviews product={product} />
+        <ProductCardPrice product={product} />
         {cd && (
           <p className="sale-countdown">
             <AccessTimeIcon style={{ fontSize: 13 }} />

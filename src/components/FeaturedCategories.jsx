@@ -1,3 +1,4 @@
+import { ProductCardPrice, ProductCardReviews } from "./ProductCardMeta";
 // src/components/FeaturedCategories.jsx — real API, uniform cards, wishlist + Buy Now + Quick-Add
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,30 +9,16 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { getProducts, getCategories } from "../api";
 import { useWishlist } from "../context/WishlistContext";
 import QuickAddModal from "./QuickAddModal";
-import StarRoundedIcon from "@mui/icons-material/StarRounded";
-import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 
 const BRAND = "var(--brand)";
-const taka = (n) => `\u09F3${Number(n || 0).toLocaleString("en-BD")}`;
+
 const slugify = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 const imgFallback = (e, label = "RAINZ") => { e.target.onerror = null; e.target.src = `https://placehold.co/600x600/f3f4f6/9ca3af?text=${encodeURIComponent(label)}`; };
 const CATEGORY_PLACEHOLDER = (label) => `https://placehold.co/800x1000/f3f4f6/9ca3af?text=${encodeURIComponent(label || "RAINZ")}`;
 
 function ProductMini({ product, isViewMore, categoryLabel, accent, onOpen, onViewMore, onAdd, onBuyNow }) {
   const { has, toggle } = useWishlist();
-  function Stars({ rating = 0, size = 13 }) {
-    const full = Math.round(rating);
-    return (
-      <span className="inline-flex text-amber-400">
-        {Array.from({ length: 5 }).map((_, i) =>
-          i < full
-            ? <StarRoundedIcon key={i} style={{ fontSize: size }} />
-            : <StarBorderRoundedIcon key={i} style={{ fontSize: size }} />
-        )}
-      </span>
-    );
-  }
 
   if (isViewMore) {
     return (
@@ -84,23 +71,9 @@ function ProductMini({ product, isViewMore, categoryLabel, accent, onOpen, onVie
       <div className="px-3 pt-2 pb-1 flex flex-col">
         <p className="text-sm truncate cursor-pointer hover:underline" style={{ color: "var(--details)" }} onClick={() => onOpen(product)}>{product.name}</p>
 
-        {/* Rating + review count */}
-        <div className="flex items-center gap-1 mb-1 h-4">
-          {product.reviews > 0 ? (
-            <>
-              <Stars rating={product.rating} />
-              <span className="text-[11px]" style={{ color: "var(--subtitle)" }}>{Number(product.rating).toFixed(1)}</span>
-              <span className="text-[11px]" style={{ color: "var(--subtitle)", opacity: 0.7 }}>({product.reviews})</span>
-            </>
-          ) : (
-            <span className="text-[11px]" style={{ color: "var(--subtitle)", opacity: 0.5 }}>No reviews yet</span>
-          )}
-        </div>
+        <ProductCardReviews product={product} />
 
-        <div className="flex items-center gap-2 mt-0.5 h-5">
-          <span className="text-sm font-bold" style={{ color: "var(--title)" }}>{taka(product.price)}</span>
-          {product.oldPrice && <span className="text-xs line-through" style={{ color: "var(--subtitle)", opacity: 0.7 }}>{taka(product.oldPrice)}</span>}
-        </div>
+        <ProductCardPrice product={product} />
 
         <div className="mt-2 grid grid-cols-1 gap-1.5">
           <button onClick={(e) => { e.stopPropagation(); onAdd(product); }} className="w-full flex items-center justify-center gap-1.5 rounded-md py-1.5 text-xs font-semibold transition-opacity hover:opacity-90" style={{ backgroundColor: accent, color: "var(--button-text)" }}>

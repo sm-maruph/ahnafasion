@@ -1,0 +1,16 @@
+.af-card-reviews { display: flex; align-items: center; gap: 4px; min-height: 20px; margin: 2px 0 4px; color: var(--subtitle); font-size: 10px; line-height: 1.4; }
+.af-card-reviews svg { flex-shrink: 0; color: var(--brand); }
+.af-card-reviews strong { color: var(--details); font-weight: 500; }
+.af-card-price { display: flex; align-items: center; gap: 6px; min-height: 24px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.af-card-price > strong { color: var(--title); font-size: 14px; font-weight: 700; }
+.af-card-price > del { color: var(--subtitle); font-size: 10px; opacity: .75; }
+.af-card-savings { display: inline-flex; align-items: center; gap: 3px; padding: 3px 5px; border: 1px solid #388b5e; border-radius: 4px; background: #16472f; color: #baf3ce; font-size: 10px; font-weight: 600; line-height: 1.3; }
+.af-card-savings svg { width: 10px; height: 10px; flex-shrink: 0; }
+.af-card-savings { margin-left: 16px; }
+@media (max-width: 639px) {
+  .af-card-price { gap: 4px; }
+  .af-card-price > strong { font-size: 12px; }
+  .af-card-price > del { font-size: 9px; }
+  .af-card-savings { gap: 2px; padding: 3px; font-size: 9px; margin-left: 10px; }
+  .af-card-savings svg { display: none; }
+}
