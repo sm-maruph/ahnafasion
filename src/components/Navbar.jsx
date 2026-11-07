@@ -37,9 +37,11 @@ const Navbar = forwardRef(
     const [menuOpen, setMenuOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(null);
     const [activeMenu, setActiveMenu] = useState(null);
+    const [profileOpen, setProfileOpen] = useState(false);
     const [fetchedCats, setFetchedCats] = useState(null);
     const [featuredByCat, setFeaturedByCat] = useState({});
     const closeTimer = useRef(null);
+    const profileCloseTimer = useRef(null);
 
     useEffect(() => {
       if (categoriesProp) return;
@@ -85,7 +87,7 @@ const Navbar = forwardRef(
     const location = useLocation();
     const currentSlug = location.pathname.split("/")[1] || "home";
 
-    const go = (path) => { setMenuOpen(false); setOpenDropdown(null); navigate(path); };
+    const go = (path) => { setMenuOpen(false); setOpenDropdown(null); setProfileOpen(false); navigate(path); };
     const goCategory = (cat) => go(`/${catSlug(cat)}`);
     const goSub = (cat, item) => go(`/${catSlug(cat)}/${slugify(item)}`);
 
@@ -95,7 +97,19 @@ const Navbar = forwardRef(
       return () => { document.body.style.overflow = ""; };
     }, [menuOpen]);
 
-    useEffect(() => () => closeTimer.current && clearTimeout(closeTimer.current), []);
+    useEffect(() => () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+      if (profileCloseTimer.current) clearTimeout(profileCloseTimer.current);
+    }, []);
+
+    const keepProfileOpen = () => {
+      if (profileCloseTimer.current) clearTimeout(profileCloseTimer.current);
+      setProfileOpen(true);
+    };
+    const scheduleProfileClose = () => {
+      if (profileCloseTimer.current) clearTimeout(profileCloseTimer.current);
+      profileCloseTimer.current = setTimeout(() => setProfileOpen(false), 180);
+    };
 
     useEffect(() => {
       const desktop = window.matchMedia("(min-width: 1280px)");
@@ -255,12 +269,20 @@ const Navbar = forwardRef(
                 <Inventory2OutlinedIcon fontSize="medium" />
                 <span className="text-[11px] font-medium">Orders</span>
               </button>
-              <div className="relative group">
-                <button className="flex flex-col items-center gap-0.5 transition-colors" style={{ color: "var(--title)" }}>
+              <div className="relative group" onMouseEnter={keepProfileOpen} onMouseLeave={scheduleProfileClose}>
+                <button
+                  className="flex flex-col items-center gap-0.5 transition-colors"
+                  style={{ color: "var(--title)" }}
+                  aria-haspopup="true"
+                  aria-expanded={profileOpen}
+                  onClick={() => setProfileOpen((open) => !open)}
+                  onFocus={keepProfileOpen}
+                  onBlur={(event) => { if (!event.currentTarget.parentElement.contains(event.relatedTarget)) scheduleProfileClose(); }}
+                >
                   <PersonOutlineOutlinedIcon fontSize="medium" />
                   <span className="text-[11px] font-medium">Profile</span>
                 </button>
-                <div className="absolute right-0 top-full z-50 hidden group-hover:block w-60 pt-2">
+                <div className={`absolute right-0 top-full z-50 w-60 pt-2 ${profileOpen ? "block" : "hidden"} group-hover:block group-focus-within:block`}>
                   <div className="shadow-xl border border-gray-100 rounded-md overflow-hidden" style={{ backgroundColor: "var(--secondary)" }}>
                     <div className="px-4 py-3">
                       {user ? (

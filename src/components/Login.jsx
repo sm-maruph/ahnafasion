@@ -44,7 +44,7 @@ export default function Login() {
   };
 
   return (
-    <div className="relative min-h-[calc(100svh-4rem)] overflow-hidden px-3 py-6 sm:px-6 sm:py-10 lg:px-10">
+    <div className="relative min-h-screen overflow-hidden px-3 py-6 sm:px-6 sm:py-10 lg:px-10">
       <div className="pointer-events-none absolute -left-32 top-1/4 h-72 w-72 rounded-full blur-3xl" style={{ backgroundColor: "rgba(212,175,55,.08)" }} />
       <div className="pointer-events-none absolute -right-28 bottom-0 h-80 w-80 rounded-full blur-3xl" style={{ backgroundColor: "rgba(212,175,55,.06)" }} />
 
@@ -86,9 +86,18 @@ export default function Login() {
 
         <section className="flex items-center justify-center px-5 py-9 sm:px-10 sm:py-12 lg:px-16">
           <form onSubmit={submit} className="w-full max-w-md" noValidate>
+            <Link to="/" className="mb-6 inline-flex items-center gap-2 text-sm font-medium no-underline transition hover:underline" style={{ color: BRAND }}>
+              <span aria-hidden="true">←</span> Back to home
+            </Link>
             <p className="text-[11px] font-semibold uppercase tracking-[.25em]" style={{ color: BRAND }}>Welcome back</p>
             <h2 className="mt-2 text-3xl font-semibold sm:text-4xl" style={{ color: "var(--details)" }}>Sign in</h2>
             <p className="mt-2 text-sm leading-6" style={{ color: "var(--subtitle)" }}>Enter your account details to continue shopping.</p>
+
+            {location.state?.message && (
+              <div className="mt-5 rounded-xl border px-4 py-3 text-sm text-emerald-300" style={{ backgroundColor: "rgba(6,78,59,.2)", borderColor: "rgba(52,211,153,.3)" }} role="status">
+                {location.state.message}
+              </div>
+            )}
 
             {error && (
               <div className="mt-5 flex items-center gap-2 rounded-xl border px-4 py-3 text-sm" style={{ color: "#FCA5A5", backgroundColor: "rgba(127,29,29,.18)", borderColor: "rgba(248,113,113,.3)" }} role="alert">

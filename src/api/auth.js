@@ -22,6 +22,21 @@ export async function login({ email, password }) {
 export async function logout() {
   await supabase.auth.signOut();
 }
+export async function updatePassword({ currentPassword, newPassword }) {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError) throw userError;
+  if (!user?.email) throw new Error("Could not verify the signed-in admin account.");
+
+  // Supabase requires a fresh authentication to verify the current password.
+  const { error: verifyError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: currentPassword,
+  });
+  if (verifyError) throw new Error("Current password is incorrect.");
+
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  if (error) throw error;
+}
 export async function getCurrentUser() {
   const { data } = await supabase.auth.getSession();
   if (!data?.session) return null;

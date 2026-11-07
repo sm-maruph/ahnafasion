@@ -75,9 +75,9 @@ export default function MaintenancePage() {
         <div className="mnt-progress" aria-hidden="true"><div className="mnt-progress-bar" /></div>
 
         {/* Contact */}
-        {(settings.supportPhone || settings.supportEmail) && (
+        {(settings.supportPhone || settings.supportEmail || settings.address || settings.hours) && (
           <div className="mnt-card">
-            <p className="mnt-card-title">Need help in the meantime?</p>
+            <p className="mnt-card-title">Contact us</p>
             <div className="mnt-contact-list">
               {settings.supportPhone && (
                 <a href={`tel:${settings.supportPhone}`} className="mnt-contact">
@@ -89,6 +89,10 @@ export default function MaintenancePage() {
                   <MailOutlineIcon style={{ fontSize: 16 }} /> {settings.supportEmail}
                 </a>
               )}
+              {(settings.address || settings.city) && (
+                <p className="mnt-contact mnt-contact-static">{[settings.address, settings.city].filter(Boolean).join(", ")}</p>
+              )}
+              {settings.hours && <p className="mnt-contact mnt-contact-static">Hours: {settings.hours}</p>}
             </div>
           </div>
         )}
@@ -104,9 +108,9 @@ export default function MaintenancePage() {
           </div>
         )}
 
-        {/* Staff entrance — the way back in if maintenance was left on */}
+        {/* Authorized staff can sign in and access the admin panel. */}
         <p className="mnt-staff">
-          Store staff? <Link to="/login" className="mnt-staff-link">Sign in here</Link>
+          Authorized staff? <Link to="/admin" className="mnt-staff-link">Admin sign in</Link>
         </p>
       </div>
 
@@ -252,6 +256,7 @@ export default function MaintenancePage() {
           color: #FDA4AF; transition: color .2s;
         }
         .mnt-contact:hover { color: #FFFFFF; }
+        .mnt-contact-static { margin: 0; }
 
         /* socials */
         .mnt-socials { margin-top: 22px; display: flex; justify-content: center; gap: 8px; }

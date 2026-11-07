@@ -54,7 +54,7 @@ import ScrollToTop from "./components/subcomponent/ScrollToTop";
 
 function App() {
   const location = useLocation();
-  const { user, logout, isAdmin, loading: authLoading } = useAuth();
+  const { user, logout } = useAuth();
   const { settings, loading: settingsLoading } = useSettings();
   const { count: cartCount } = useCart();
   const { count: wishlistCount } = useWishlist();
@@ -62,13 +62,14 @@ function App() {
   // Both /howdy (old admin) and /admin (new dashboard) hide the storefront chrome
   const isAdminPage =
     location.pathname.startsWith("/howdy") || location.pathname.startsWith("/admin");
+  const isLoginPage = location.pathname === "/login";
 
   // Measure the fixed navbar so <main> always starts right below it (any screen size)
   const navRef = useRef(null);
   const [navHeight, setNavHeight] = useState(64);
 
   useLayoutEffect(() => {
-    if (isAdminPage) {
+    if (isAdminPage || isLoginPage) {
       setNavHeight(0);
       return;
     }
@@ -87,23 +88,21 @@ function App() {
       window.removeEventListener("resize", measure);
       ro && ro.disconnect();
     };
-  }, [isAdminPage]);
+  }, [isAdminPage, isLoginPage]);
 
 
   // ---- Maintenance mode ----------------------------------------------
-  // Admins and the login page must stay reachable, otherwise turning
-  // maintenance OFF again would require a database edit.
-  const isLoginPage = ["/login", "/register"].includes(location.pathname);
+  // Keep admin sign-in reachable so an authorized admin can turn maintenance off.
   const isCheckoutPage = location.pathname === "/checkout";
-  const stillLoading = authLoading || settingsLoading;
+  const stillLoading = settingsLoading;
 
-  if (settings.maintenance && !stillLoading && !isAdmin && !isAdminPage && !isLoginPage) {
+  if (settings.maintenance && !stillLoading && !isAdminPage && !isLoginPage) {
     return <MaintenancePage />;
   }
 
   return (
     <>
-      {!isAdminPage && (
+      {!isAdminPage && !isLoginPage && (
         <Navbar
           ref={navRef}
           user={user}
@@ -116,7 +115,7 @@ function App() {
       <AutoScrollUp />
 
       <main
-        className={`${isAdminPage ? "admin-page" : "storefront"} w-full mx-auto min-h-screen overflow-x-hidden pb-16 md:pb-0`}
+        className={`${isAdminPage ? "admin-page" : "storefront"} w-full mx-auto min-h-screen overflow-x-hidden ${isLoginPage ? "pb-0" : "pb-16 md:pb-0"}`}
         style={{ paddingTop: isAdminPage ? 0 : navHeight, backgroundColor: "var(--primary)" }}
       >
         <Routes>
@@ -174,7 +173,7 @@ function App() {
             }
           />
         </Routes>
-        {!isAdminPage && <ScrollToTop showCart={!isLoginPage && !isCheckoutPage} />}
+        {!isAdminPage && !isLoginPage && <ScrollToTop showCart={!isCheckoutPage} />}
       </main>
 
       {!isAdminPage && !isLoginPage && (

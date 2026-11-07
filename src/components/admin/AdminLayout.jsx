@@ -19,6 +19,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
 import { useSettings } from "../../context/SettingsContext";
+import { useAuth } from "../../context/AuthContext";
 
 
 const BRAND = "#E11D48";
@@ -95,10 +96,14 @@ function Brand() {
 export default function AdminLayout() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { logout: signOut } = useAuth();
 
-  const logout = () => {
-    // TODO: clear admin auth/token here
+  const logout = async () => {
+    try {
+      await signOut();
+    } finally {
     navigate("/");
+    }
   };
 
   return (

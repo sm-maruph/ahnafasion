@@ -14,7 +14,10 @@ import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import PaletteOutlinedIcon from "@mui/icons-material/PaletteOutlined";
 import { getSettings, updateSettings } from "../../api";
+import { updatePassword } from "../../api/auth";
 import { applyTheme } from "../../context/SettingsContext";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const BRAND = "#E11D48";
 
@@ -44,12 +47,20 @@ const SOCIALS = [
 ];
 
 export default function AdminSettings() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
   const [s, setS] = useState(null);
   const [logoFile, setLogoFile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     getSettings()
@@ -92,6 +103,37 @@ export default function AdminSettings() {
       setError(e.message || "Could not save settings");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const savePassword = async (event) => {
+    event.preventDefault();
+    setPasswordError("");
+    setPasswordMessage("");
+    if (newPassword.length < 8) {
+      setPasswordError("Use at least 8 characters for your password.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError("The passwords do not match.");
+      return;
+    }
+
+    setPasswordSaving(true);
+    try {
+      await updatePassword({ currentPassword, newPassword });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      await logout();
+      navigate("/login", {
+        replace: true,
+        state: { message: "Password updated. Please sign in again with your new password." },
+      });
+    } catch (e) {
+      setPasswordError(e.message || "Could not update password.");
+    } finally {
+      setPasswordSaving(false);
     }
   };
 
@@ -195,6 +237,25 @@ export default function AdminSettings() {
           <span className="text-sm text-gray-700">{s.maintenance ? "Store is currently OFFLINE" : "Store is live"}</span>
           <Toggle on={s.maintenance} onChange={() => set("maintenance", !s.maintenance)} />
         </div>
+      </Section>
+
+      <Section icon={ContactPhoneOutlinedIcon} title="Change Password" desc="Update the password for your current admin account.">
+        <form onSubmit={savePassword} className="space-y-4 max-w-lg">
+          <Field label="Current password">
+            <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} autoComplete="current-password" required className="inp" />
+          </Field>
+          <Field label="New password">
+            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} autoComplete="new-password" minLength={8} required className="inp" />
+          </Field>
+          <Field label="Confirm new password">
+            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" minLength={8} required className="inp" />
+          </Field>
+          {passwordError && <p role="alert" className="text-sm text-red-600">{passwordError}</p>}
+          {passwordMessage && <p role="status" className="text-sm text-green-700">{passwordMessage}</p>}
+          <button type="submit" disabled={passwordSaving} className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60" style={{ backgroundColor: BRAND }}>
+            {passwordSaving ? "Updating…" : "Update Password"}
+          </button>
+        </form>
       </Section>
 
       <div className="flex justify-end">
